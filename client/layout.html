@@ -1,0 +1,38 @@
+<head>
+    <title>Klipp app</title>
+</head>
+
+<body>
+  {{> player }}
+  <!--
+  {{> uploader}}
+  {{> progressBar}}
+  {{>video}}
+	{{>chapters}}
+-->
+</body>
+
+<template name="chapters">
+	<div id="chapter">
+		{{#each chapters}}
+			{{>chapter}}
+		{{/each}}
+	</div>
+</template>
+
+<template name="chapter">
+	<div class="chapter-image">
+		<div>
+			{{#if url store="chapterImage"}}
+				<img src="{{url store="chapterImage"}}" >
+			{{else}}
+				<img src="/uploading.png">
+				{{#unless isUploaded}}
+					<p class="uploadProgress">uploading..{{uploadProgress}}%</p>
+				{{else}}
+					<p class="uploadProgress">processing..</p>
+				{{/unless}}
+			{{/if}}
+		</div>
+	</div>
+</template>

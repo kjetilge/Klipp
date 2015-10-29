@@ -1,0 +1,24 @@
+# Meteor packages used by this project, one per line.
+#
+# 'meteor add' and 'meteor remove' will edit this file for you,
+# but you can also edit it by hand.
+
+standard-app-packages
+cfs:standard-packages
+cfs:gridfs
+cfs:filesystem
+cfs:graphicsmagick
+meteorhacks:npm
+npm-container
+izzilab:shelljs
+natestrauser:videojs
+standard-minifiers
+ecmascript
+insecure
+edgee:slingshot
+reactive-var
+autopublish
+mquandalle:jade
+neonaleon:gss
+kadira:flow-router
+jrudio:videojs

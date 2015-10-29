@@ -1,0 +1,8 @@
+{
+  "packages": {
+    "collectionFS": {},
+    "cfs-gridfs": {},
+    "cfs-filesystem": {},
+    "cfs-graphicsmagick": {}
+  }
+}

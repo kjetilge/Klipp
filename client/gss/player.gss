@@ -1,0 +1,28 @@
+videoViewerWidth == ::window[width] * (80/100);
+videoNavWidth == ::window[width] - videoViewerWidth;
+vHeight == 100;
+
+video {
+  width: == videoViewerWidth;
+  background-color: red;
+}
+
+#video-viewer {
+  background-color: green;
+  width: videoViewerWidth;
+  height: == &intrinsic-height;
+  vHeight == &height;
+}
+
+#video-nav {
+  background-color: brown;
+  right: == ::window[right];
+  width: == videoNavWidth;
+  height: == ::window[height];
+}
+
+#chapter-nav {
+  background-color: purple;
+  bottom: == $bottom;
+  height: == vHeight;
+}
