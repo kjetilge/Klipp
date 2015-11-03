@@ -1,68 +1,44 @@
-//Session.setDefault('previousHeight', 0);
-
+/******************* HTML5 PLAYER *******************/
 Template.html5Player.helpers({
-  video: function () {
+  'posterImageUrl': function () {
+    var notFound = true;
     var videoId = FlowRouter.getQueryParam('videoId');
     var vid = Videos.findOne({_id: videoId});
-    if(vid && vid._id) {
-      return vid;
+    if(vid && vid._id){ //VIDEO WITHOUT Videofile
+      console.log("vid id", vid._id)
+      if(!vid.filename) {
+        //No video file yet
+        return 'no-video.jpg';
+      } else {
+        console.log("vid FILENAME")
+        var splashImage = SplashImages.findOne(vid.splashId);
+        return splashImage.url({store: 'splashImage'})
+      }
     }
     else {
-      vid = Videos.findOne(); //
-      //Session.set("videoId", videoId);
-      return vid;
+      //FlowRouter.go('/video-ikke-funnet');
     }
-  },
-  'posterImageUrl': function () {
-    var videoId = FlowRouter.getQueryParam('videoId');
-
-    FlowRouter.subsReady("singleVideo", function() {
-      var vid = Videos.findOne({_id: videoId});
-      console.log("subs ready",splashImage);
-      var splashImage = SplashImages.findOne(vid.splashId);
-      console.log("splashImage",splashImage)
-      return splashImage.url({store: 'splashImage'})
-    });
-
-    /*
-    console.log("splash",splashImage)
-    if(splashImage) {
-      return splashImage.url({store: 'splashImage'})
-    } else {
-      return "";
-    }*/
   },
   videoUrl: function () { //Slingshot
     var videoId = FlowRouter.getQueryParam('videoId');
     var vid = Videos.findOne({_id: videoId});
-    if(Boolean(vid)) {
-      var downloadUrl = vid.downloadUrl
-      return downloadUrl
+    if(vid && vid._id) { //Hvis videoen er opprettet
+      if(vid.downloadUrl)
+        return vid.downloadUrl
+      else
+        return "video/no-video.mp4";
     }
     else {
-      vid = Videos.findOne();
-      return vid;
+      FlowRouter.go('/video-ikke-funnet');
     }
   }
 })
-/*
-Template.html5Player.created = function() {
-  var self = this;
-  self.autorun(function() {
-    var videoId = FlowRouter.getQueryParam('videoId');
-    //console.log("subd videoId", videoId)
-    var vid = Videos.findOne({_id: videoId});
-    if(vid)
-      self.subscribe('singleVideo', videoId);
-    else
-      self.subscribe('singleVideo', "F6cmExoGDPo2CCxPa");
-    self.subscribe('videos');
-  });
-}*/
 Template.html5Player.created = function () {
   var self = this;
   self.autorun(function() {
     var videoId = FlowRouter.getQueryParam('videoId');
+    self.subscribe('singleVideo', videoId);
+
     FlowRouter.subsReady("singleVideo", videoId, function() { //single video is available when signle video is available
       var vid = Videos.findOne({_id: videoId});
       self.subscribe('singleSplash', vid.splashId);
@@ -71,15 +47,6 @@ Template.html5Player.created = function () {
 }
 
 
-/******************* SPLASH IMAGES *******************/
-/*
-Template.splashImage.helpers({
-	splash: function () {
-		var splash = SplashImages.findOne();
-		console.log(splash)
-		return splash;
-	}
-})*/
 
 /******************* CHAPTERS *******************/
 Template.chapters.helpers({
@@ -87,6 +54,11 @@ Template.chapters.helpers({
     var videoId = FlowRouter.getQueryParam('videoId');
 		return Chapters.find({videoId: videoId});
 	}
+})
+Template.chapter.events({
+  'click': function () {
+    console.log(this);
+  }
 })
 
 
@@ -96,19 +68,25 @@ Template.videoNav.helpers({
     return Videos.find();
   }
 })
-
 Template.videoNav.created = function () {
   Meteor.subscribe("videos");
   Meteor.subscribe('splashImages');
 }
-
-Template.videoNavItem.events({
-  'click': function () {
-    //console.log("nav", this)
-    FlowRouter.setQueryParams({videoId: this._id});
+Template.videoNav.events({ /********** CREATE VIDEO ***********/
+  'click button': function () { //.add-video
+    console.log("add video")
+    Videos.insert({title: "NO TITLE"})
   }
 })
-
+Template.videoNavItem.events({
+  'click .video-select': function () {
+    FlowRouter.setQueryParams({videoId: this._id});
+  },
+  'click button.remove-video': function () {
+    console.log("removing", this)
+    Videos.remove(this._id);
+  }
+})
 Template.videoNavItem.helpers({
   splashSmall: function () {
     var videoId = this._id;
@@ -119,3 +97,30 @@ Template.videoNavItem.helpers({
     return splash.url({store: "splashSmall"});
   }
 })
+
+Template.videoNotFound.helpers({
+  'videoId': function () {
+    var vid = Videos.findOne();
+    if(vid && vid._id)
+      return vid._id;
+    else {
+      return false;
+    }
+  }
+})
+
+Template.videoNotFound.events({
+  'click button': function () {
+    Videos.insert({title: "NO TITLE"}, function (err, res) {
+      console.log(res)
+      FlowRouter.go("/videoplayer?videoId="+res)
+    })
+  }
+})
+
+Template.html5Player.created = function () {
+  var self = this;
+  self.autorun(function() {
+    self.subscribe('videos');
+  });
+}

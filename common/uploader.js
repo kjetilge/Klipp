@@ -7,8 +7,10 @@ var uploader = new ReactiveVar();
 if (Meteor.isClient) {
   Template.uploader.events(
   { 'click button': function (e, template) {
+      var videoId = FlowRouter.getQueryParam('videoId');
+      VID = videoId;
+      var upload = new Slingshot.Upload("myFileUploads", {videoId: videoId}); //videoId ADD meta-context
 
-      var upload = new Slingshot.Upload("myFileUploads");
       file = template.find("#slingshot_upload").files[0];
       if(file) {
         upload.send(file, function (error, downloadUrl) {
@@ -18,15 +20,16 @@ if (Meteor.isClient) {
             console.error('Error uploading'); //, uploader.xhr.response);
             alert (error);
           } else {
-            var urlParts = downloadUrl.split("/")
-            var videoId = urlParts[urlParts.length-2];
-            Videos.update(videoId, {$set: {downloadUrl: downloadUrl}})
+            splashId = Meteor.call('makeSplash', downloadUrl, '1.10', (err, res) => {
+              console.log("splashId",res);
+              //var urlParts = downloadUrl.split("/")
+              //var videoId = urlParts[urlParts.length-2];
+              Videos.update(VID, {$set: {downloadUrl: downloadUrl, splashId: res._id}})
+            });
           }
-
         });
       }
       uploader.set(upload);
-
     }
   });
 
@@ -58,9 +61,10 @@ if (Meteor.isServer) {
 	    }
 	  },
 
-	  key: function (file) {
-      var video_id = Videos.insert({filename: file.name})
-      return video_id+"/"+file.name;
+	  key: function (file, vidObject) {
+      //var video_id = Videos.insert({filename: file.name})
+      return vidObject.videoId+"/"+file.name;
+      //return file.name;
 	  }
 	});
 }

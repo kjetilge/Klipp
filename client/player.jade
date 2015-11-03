@@ -1,3 +1,4 @@
+// ****************** MAIN PLAYER LAYOUT TEMPLATE ******************
 template(name="player")
   div(class="left")
     +Template.dynamic(template=videoArea)
@@ -6,56 +7,46 @@ template(name="player")
   div(class="right")
     +Template.dynamic(template=videoNavArea)
 
-
 // ****************** SUB TEMPLATES ******************
 // PLAYER
 template(name="html5Player")
   if Template.subscriptionsReady
-    video(id="video" type="video/mp4" src="{{videoUrl}}" poster="{{posterImageUrl}}" controls crossOrigin="Anonymous")
-  unless Template.subscriptionsReady
+    video(id="video" type="video/mp4" src="{{videoUrl}}" poster="{{posterImageUrl}}" controls crossOrigin="Anonymous" width="600")
+  else Template.subscriptionsReady
     h1 loading ..
     
 // VIDEO NAV
 template(name="videoNav")
+  div(id="video-actions")
+    button(class="add-video") Legg til video
   div(id="video-nav")
     +each videos
-          +videoNavItem
+      +videoNavItem
 
 template(name="videoNavItem")
-  div(class='filename') {{filename}}
-  +if title
-    div(class='title') {{title}}
-  +else
-    div(class='title') NO TITLE
-  +if splashId
-    div
-      img(src="{{splashSmall}}" width="100px")
-  +else
-    div
-      |No image
-  
-// TOLBAR
-template(name="toolbar")
-  button(class="snapshot") Snap 
-  button(class="splash-shot") Splash
-  +uploader
-  +progressBar
-  span(id="time")
-  
-// SPLASH IMAGE
-//
-  template(name="splashImage")
-    img(src="{{splash.url splash.store='splashSmall'}}")
+  div(class="video-select")
+    div(class='filename') {{filename}}
+    +if title
+      div(class='title') {{title}}
+    +else
+      div(class='title') NO TITLE
+    +if splashId
+      div
+        img(src="{{splashSmall}}" width="100px")
+    +else
+      div
+        |No image
+  div(class="itemActions")
+     button(class="remove-video") X
 
 // CHAPTERS
 template(name="chapters")
-  h1 Chapters
   div(id="chapters")
     +each chapters
       +chapter
 
 template(name="chapter")
-  div(class="chapter-image")
+  span(class="chapter")
     +if url store="chapterImage"
       img(src="{{url store='chapterImage'}}")
     +else
@@ -64,3 +55,11 @@ template(name="chapter")
         p(class="uploadProgress") uploading..{{uploadProgress}}%
       else
         p(class="uploadProgress") processing..
+        
+template(name="videoNotFound")
+  if Template.subscriptionsReady
+    h1 Video ikke funnet
+    if videoId
+      p Gå til
+        a(href="videoplayer?videoId={{videoId}}") videoavspiller
+    button Opprett video

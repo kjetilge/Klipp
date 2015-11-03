@@ -19,3 +19,18 @@ FlowRouter.route('/videoplayer', {
     }]
     //name: "<name for the route>" // optional
 });
+FlowRouter.route('/video-ikke-funnet', {
+    action: function() {
+      BlazeLayout.render('videoNotFound');
+    }
+  });
+
+FlowRouter.notFound = {
+    // Subscriptions registered here don't have Fast Render support.
+    subscriptions: function() {
+
+    },
+    action: function() {
+      BlazeLayout.render('not-found');
+    }
+};

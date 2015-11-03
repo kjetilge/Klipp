@@ -9,10 +9,22 @@
     float:right;
     width:20%;
     height:100%;
-    background:red;
+    //background:red;
 }
 
 
 html, body{
     height:100%;
+}
+
+.chapter {
+  margin-right:10px;
+}
+
+.toolbar {
+  margin:10px;
+}
+
+#video-actions {
+  padding:20px;
 }

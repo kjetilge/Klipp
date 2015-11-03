@@ -5,9 +5,9 @@ var vPath = '/Users/kjetil/Documents/Development/DevKlipp/CollectionFS-Demo/publ
 //var thumbPath = "/Users/kjetil/Documents/Development/DevKlipp/SPLASH_FILES/"
 var thumbPath = "/splash/"
 Meteor.methods({
-  makeSplash: function (videoId, time) {
+  makeSplash: function (vidUrl, time) {
     var splashPath = Async.runSync(function(done) {
-            makeSplash(videoId, time, done)
+            makeSplash(vidUrl, time, done)
           });
     if(splashPath.error) {
       throw new Meteor.Error(error, "kunne ikke lage splash")
@@ -21,7 +21,6 @@ Meteor.methods({
 
 function makeSplash(vidUrl, time, done) {
   console.log("vidUrl", vidUrl)
-  //'https://paretofilm-uploads.s3-eu-west-1.amazonaws.com/iKBXo27pL9JcANaKc/v3.mp4'
   var splashImagePath = new ffmpeg({ source: vidUrl})
     .withSize('1920x1080')
     .toFormat('png')
