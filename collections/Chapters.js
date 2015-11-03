@@ -4,6 +4,7 @@ FS.HTTP.setHeadersForGet([
     ]);
 
 var chapterImageMaster = new FS.Store.GridFS("chapterImageMaster");
+
 var chapterImage = new FS.Store.GridFS("chapterImage", {
   beforeWrite: function(fileObj) {
     return {

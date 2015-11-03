@@ -1,5 +1,5 @@
 Slingshot.fileRestrictions("myFileUploads", {
-  allowedFileTypes: ['video/mp4', 'video/mov', 'video/mp4'],
+  allowedFileTypes: ['video/mp4', 'video/mov'],
   maxSize: null //10 * 1024 * 1024 // 10 MB (use null for unlimited)
 });
 var uploader = new ReactiveVar();
@@ -18,9 +18,9 @@ if (Meteor.isClient) {
             console.error('Error uploading'); //, uploader.xhr.response);
             alert (error);
           } else {
-            // Meteor.users.update(Meteor.userId(), {$push: {"profile.files": downloadUrl}});
-            var video_id = downloadUrl.split("/")[0]
-            Videos.upsert(video_id, {$set: {downloadUrl: downloadUrl}})
+            var urlParts = downloadUrl.split("/")
+            var videoId = urlParts[urlParts.length-2];
+            Videos.update(videoId, {$set: {downloadUrl: downloadUrl}})
           }
 
         });

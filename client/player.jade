@@ -1,0 +1,66 @@
+template(name="player")
+  div(class="left")
+    +Template.dynamic(template=videoArea)
+    +Template.dynamic(template=toolbarArea)
+    +Template.dynamic(template=chaptersArea)
+  div(class="right")
+    +Template.dynamic(template=videoNavArea)
+
+
+// ****************** SUB TEMPLATES ******************
+// PLAYER
+template(name="html5Player")
+  if Template.subscriptionsReady
+    video(id="video" type="video/mp4" src="{{videoUrl}}" poster="{{posterImageUrl}}" controls crossOrigin="Anonymous")
+  unless Template.subscriptionsReady
+    h1 loading ..
+    
+// VIDEO NAV
+template(name="videoNav")
+  div(id="video-nav")
+    +each videos
+          +videoNavItem
+
+template(name="videoNavItem")
+  div(class='filename') {{filename}}
+  +if title
+    div(class='title') {{title}}
+  +else
+    div(class='title') NO TITLE
+  +if splashId
+    div
+      img(src="{{splashSmall}}" width="100px")
+  +else
+    div
+      |No image
+  
+// TOLBAR
+template(name="toolbar")
+  button(class="snapshot") Snap 
+  button(class="splash-shot") Splash
+  +uploader
+  +progressBar
+  span(id="time")
+  
+// SPLASH IMAGE
+//
+  template(name="splashImage")
+    img(src="{{splash.url splash.store='splashSmall'}}")
+
+// CHAPTERS
+template(name="chapters")
+  h1 Chapters
+  div(id="chapters")
+    +each chapters
+      +chapter
+
+template(name="chapter")
+  div(class="chapter-image")
+    +if url store="chapterImage"
+      img(src="{{url store='chapterImage'}}")
+    +else
+      img(src="/uploading.png")
+      unless isUploaded
+        p(class="uploadProgress") uploading..{{uploadProgress}}%
+      else
+        p(class="uploadProgress") processing..

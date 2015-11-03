@@ -1,18 +1,21 @@
-FlowRouter.route('/video/:postId', {
-    // do some action for this route
+//WebSocket connection to 'ws://localhost:3000/sockjs/740/t4rbwr7c/websocket' failed: WebSocket is closed before the connection is established.
+
+FlowRouter.route('/videoplayer', {
     action: function(params, queryParams) {
-        console.log("Params:", params);
-        console.log("Query Params:", queryParams);
+      //console.log("Query Params:", queryParams);
+      BlazeLayout.render('player', {
+        videoArea: "html5Player",
+        toolbarArea: "toolbar",
+        chaptersArea: "chapters",
+        videoNavArea: "videoNav"
+      });
     },
-
-    name: "<name for the route>" // optional
-});
-
-FlowRouter.route('/', {
-    // do some action for this route
-    action: function(params, queryParams) {
-        console.log("video action");
-    },
-
-    name: "<name for the route>" // optional
+    triggersExit: [function () {
+      /*
+      var player = $('#video')[0];
+      var sources = player.getElementsByTagName('source');
+      console.log("trigger");
+      sources[0].src = "";*/
+    }]
+    //name: "<name for the route>" // optional
 });

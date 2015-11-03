@@ -46,7 +46,7 @@ SplashImages = new FS.Collection("splashImages", {
         }
     }
 });
-
+/*
 Chapters.allow({
     insert: function(userId, file) {
         return true;
@@ -61,11 +61,16 @@ Chapters.allow({
         return true;
     }
 });
+*/
 
 if(Meteor.isServer){
-    Meteor.publish('splashImage', function () {
+    Meteor.publish('splashImage', function (splashId) {
+        return SplashImages.findOne(splashId);
+    });
+    Meteor.publish('splashImages', function () {
         return SplashImages.find();
     });
-}else{
+} else {
     Meteor.subscribe('splashImage');
+    Meteor.subscribe('splashImages');
 }

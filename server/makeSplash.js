@@ -5,22 +5,24 @@ var vPath = '/Users/kjetil/Documents/Development/DevKlipp/CollectionFS-Demo/publ
 //var thumbPath = "/Users/kjetil/Documents/Development/DevKlipp/SPLASH_FILES/"
 var thumbPath = "/splash/"
 Meteor.methods({
-  makeSplash: function (video_id, time) {
+  makeSplash: function (videoId, time) {
     var splashPath = Async.runSync(function(done) {
-            makeSplash(video_id, time, done)
+            makeSplash(videoId, time, done)
           });
     if(splashPath.error) {
       throw new Meteor.Error(error, "kunne ikke lage splash")
     } else {
       console.log('splashImagePath', splashPath.result)
-      SplashImages.remove({})
-      SplashImages.insert(splashPath.result)
+      var splashId = SplashImages.insert(splashPath.result);
+      return splashId;
     }
   }
 })
 
-function makeSplash(video_id, time, done) {
-  var splashImagePath = new ffmpeg({ source: 'https://paretofilm-uploads.s3-eu-west-1.amazonaws.com/iKBXo27pL9JcANaKc/v3.mp4' })
+function makeSplash(vidUrl, time, done) {
+  console.log("vidUrl", vidUrl)
+  //'https://paretofilm-uploads.s3-eu-west-1.amazonaws.com/iKBXo27pL9JcANaKc/v3.mp4'
+  var splashImagePath = new ffmpeg({ source: vidUrl})
     .withSize('1920x1080')
     .toFormat('png')
     .takeScreenshots({
