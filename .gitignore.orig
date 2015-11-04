@@ -1,0 +1,10 @@
+<<<<<<< HEAD
+.sass-cache
+#settings.json
+#settings-development.json
+#settings-production.json
+/public/video
+=======
+.meteor/local
+.meteor/meteorite
+>>>>>>> 629975b7348c0a9b035fb1326cff784f73347bc7
