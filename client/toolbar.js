@@ -9,10 +9,24 @@ Template.toolbar.events({
 
   },
   'click button.splash-shot': function (e, t) {
-    var videoId = FlowRouter.getQueryParam('videoId');
-    var vidUrl = Videos.findOne(videoId).downloadUrl;
+    //Get the video time
     var video = $("#video")[0];
     var time = video.currentTime
+
+    var videoId = FlowRouter.getQueryParam('videoId');
+    var vid = Videos.findOne(videoId);
+
+    //If video is not upoaded yet, store the splash time
+    if(!vid.downloadUrl) {
+      console.log("capure off-line splash")
+      //capture a still and show it in navItem
+      Session.set('splashTime', time)
+      //todo: Show the splash in the Nav Item
+      previewSplash(videoId);
+      return;
+    }
+    var vidUrl = vid.downloadUrl;
+
     console.log("vidUrl", vidUrl)
     Meteor.call('makeSplash', vidUrl, time, function (err,res) {
       if(res) {
@@ -25,6 +39,7 @@ Template.toolbar.events({
     })
   }
 })
+
 
 function captureStill() {
   var video = $("video").get(0);
@@ -46,6 +61,19 @@ function captureStill() {
       Chapters.update(res._id, {$set: {videoId: videoId, time: time}} );
     }
   })
+}
 
+function previewSplash(videoId) {
+  var video = $("video").get(0);
+  var time = video.currentTime;
+  var canvas = document.createElement("canvas");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d')
+        .drawImage(video, 0, 0, canvas.width, canvas.height);
 
+  //var img = document.createElement("img");
+  var img = $(".video-select#"+videoId+" img")[0];
+  img.src = canvas.toDataURL();
+  console.log(this);
 }

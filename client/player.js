@@ -5,10 +5,11 @@ Template.html5Player.helpers({
     var videoId = FlowRouter.getQueryParam('videoId');
     var vid = Videos.findOne({_id: videoId});
     if(vid && vid._id){ //VIDEO WITHOUT Videofile
-      console.log("vid id", vid._id)
-      if(!vid.filename) {
+      //console.log("vid id", vid._id)
+      if(!vid.downloadUrl) {
         //No video file yet
-        return 'no-video.jpg';
+        //console.log("no filename", vid.downloadUrl)
+        return 'images/no-video.jpg';
       } else {
         console.log("vid FILENAME")
         var splashImage = SplashImages.findOne(vid.splashId);
@@ -20,13 +21,19 @@ Template.html5Player.helpers({
     }
   },
   videoUrl: function () { //Slingshot
+    var fileUrl =  Session.get("uploadFile")
+    if(fileUrl)
+      return fileUrl
+
     var videoId = FlowRouter.getQueryParam('videoId');
     var vid = Videos.findOne({_id: videoId});
     if(vid && vid._id) { //Hvis videoen er opprettet
       if(vid.downloadUrl)
         return vid.downloadUrl
-      else
+      else {
         return "video/no-video.mp4";
+      }
+
     }
     else {
       FlowRouter.go('/video-ikke-funnet');
@@ -34,6 +41,7 @@ Template.html5Player.helpers({
   }
 })
 Template.html5Player.created = function () {
+  Session.set("uploadFile", null)
   var self = this;
   self.autorun(function() {
     var videoId = FlowRouter.getQueryParam('videoId');
@@ -46,6 +54,39 @@ Template.html5Player.created = function () {
   })
 }
 
+Session.setDefault("uploadFile", false)
+Template.html5Player.onRendered(function () {
+  /************* LOAD VIDEO INTO FORM *************/
+  var video = $("#video")[0],
+      input = document.getElementById('slingshot_upload');
+
+  input.addEventListener('change', function (evt) {
+      var reader = new window.FileReader(),
+          file = evt.target.files[0],
+          url;
+
+          reader = window.URL || window.webKitURL;
+
+      if (reader && reader.createObjectURL) {
+          url = reader.createObjectURL(file);
+          Session.set("uploadFile", url); /********** LOAD VIDEO *********/
+          $("#video")[0].poster="";
+          //reader.revokeObjectURL(url);  //free up memory
+          return;
+      }
+
+      if (!window.FileReader) {
+          console.log('Sorry, not so much');
+          return;
+      }
+
+      reader = new window.FileReader();
+      reader.onload = function(evt) {
+         $("#video")[0].src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+  }, false);
+})
 
 
 /******************* CHAPTERS *******************/
@@ -60,7 +101,13 @@ Template.chapter.events({
     console.log(this);
   }
 })
-
+Template.chapter.onRendered(function () {
+  imgix.fluid({
+    updateOnResizeDown: true,
+    pixelStep: 5,
+    autoInsertCSSBestPractices: true
+  });
+})
 
 /******************* VIDEO NAVIGATION *******************/
 Template.videoNav.helpers({
@@ -75,16 +122,34 @@ Template.videoNav.created = function () {
 Template.videoNav.events({ /********** CREATE VIDEO ***********/
   'click button': function () { //.add-video
     console.log("add video")
-    Videos.insert({title: "NO TITLE"})
+    Videos.insert({title: "NO TITLE"}, function (err, res) {
+      if(res) //videoId
+        FlowRouter.setQueryParams({videoId: res});
+      else {
+        Session.set("errorMessage", "Kunne ikke opptrette ny video: "+err);
+      }
+    })
   }
 })
 Template.videoNavItem.events({
   'click .video-select': function () {
+    Session.set("uploadFile", null);
     FlowRouter.setQueryParams({videoId: this._id});
   },
   'click button.remove-video': function () {
-    console.log("removing", this)
-    Videos.remove(this._id);
+    Session.set("uploadFile", null);
+    Videos.remove(this._id, function (err, res) {
+      if(res) {
+        var vid = Videos.findOne();
+        if(vid && vid._id) {
+          FlowRouter.go("/videoplayer?videoId="+vid._id);
+        }
+        else {
+          FlowRouter.go("/video-ikke-funnet")
+        }
+      }
+    })
+
   }
 })
 Template.videoNavItem.helpers({
@@ -95,7 +160,7 @@ Template.videoNavItem.helpers({
     var splash = SplashImages.findOne(vid.splashId);
     //console.log("splash",splash)
     return splash.url({store: "splashSmall"});
-  }
+  },
 })
 
 Template.videoNotFound.helpers({

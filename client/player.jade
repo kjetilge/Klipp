@@ -24,8 +24,8 @@ template(name="videoNav")
       +videoNavItem
 
 template(name="videoNavItem")
-  div(class="video-select")
-    div(class='filename') {{filename}}
+  div(class="video-select" id="{{_id}}")
+    div(class='filename') {{fileName}}
     +if title
       div(class='title') {{title}}
     +else
@@ -35,7 +35,7 @@ template(name="videoNavItem")
         img(src="{{splashSmall}}" width="100px")
     +else
       div
-        |No image
+        img(class="preview" src="images/no-video.jpg" width="100px")
   div(class="itemActions")
      button(class="remove-video") X
 
@@ -55,7 +55,7 @@ template(name="chapter")
         p(class="uploadProgress") uploading..{{uploadProgress}}%
       else
         p(class="uploadProgress") processing..
-        
+          
 template(name="videoNotFound")
   if Template.subscriptionsReady
     h1 Video ikke funnet
