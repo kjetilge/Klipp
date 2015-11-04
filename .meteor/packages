@@ -22,4 +22,5 @@ mquandalle:jade
 kadira:flow-router
 kadira:blaze-layout
 cfs:ejson-file
-fermuch:imgix
+babrahams:editable-text
+meteortoys:allthings

@@ -1,14 +1,38 @@
-Slingshot.fileRestrictions("myFileUploads", {
-  allowedFileTypes: ['video/mp4', 'video/mov'],
+Slingshot.fileRestrictions("videoUploads", {
+  allowedFileTypes: ['video/mp4'],
   maxSize: null //10 * 1024 * 1024 // 10 MB (use null for unlimited)
 });
-var uploader = new ReactiveVar();
+
+if (Meteor.isServer) {
+	Slingshot.createDirective("videoUploads", Slingshot.S3Storage, {
+	  bucket: Meteor.settings.AWSBucket,
+	  region: Meteor.settings.AWSRegion,
+	  acl: "public-read",
+
+	  authorize: function () {
+	    return true;
+	    //Deny uploads if user is not logged in.
+	    if (!this.userId) {
+	      var message = "Please login before posting files";
+	      throw new Meteor.Error("Login Required", message);
+	    }
+	  },
+
+	  key: function (file, vidObject) {
+      Videos.update(vidObject.videoId, {$set: {fileName: file.name}})
+      return vidObject.videoId+"/"+file.name;
+	  }
+	});
+}
+
+
+
+
 
 if (Meteor.isClient) {
-  Template.uploader.events(
-  { 'click button': function (e, template) {
-
-
+  /*
+  Template.uploader.events({
+    'click button.upload': function (e, template) {
       var videoId = FlowRouter.getQueryParam('videoId');
       VID = videoId;
       var upload = new Slingshot.Upload("myFileUploads", {videoId: videoId}); //videoId ADD meta-context
@@ -35,12 +59,18 @@ if (Meteor.isClient) {
         });
       }
       uploader.set(upload);
+    },
+    'click button.cancel': function () {
+      uploader.xhr.abort();
     }
   });
 
   Template.progressBar.helpers({
       isUploading: function () {
-          return Boolean(uploader.get());
+        var uploading = Boolean(uploader.get())
+        Session.set('videoLoaded', !uploading); //don't show "start upload" while uploading
+        Session.set("isUploading", uploading)
+        return uploading;
       },
 
       progress: function () {
@@ -49,28 +79,5 @@ if (Meteor.isClient) {
               return Math.round(upload.progress() * 100) || 0 ;
       }
   });
-
-}
-if (Meteor.isServer) {
-	Slingshot.createDirective("myFileUploads", Slingshot.S3Storage, {
-	  bucket: Meteor.settings.AWSBucket,
-	  region: Meteor.settings.AWSRegion,
-	  acl: "public-read",
-
-	  authorize: function () {
-	    return true;
-	    //Deny uploads if user is not logged in.
-	    if (!this.userId) {
-	      var message = "Please login before posting files";
-	      throw new Meteor.Error("Login Required", message);
-	    }
-	  },
-
-	  key: function (file, vidObject) {
-      //var video_id = Videos.insert({filename: file.name})
-      Videos.update(vidObject.videoId, {$set: {fileName: file.name}})
-      return vidObject.videoId+"/"+file.name;
-      //return file.name;
-	  }
-	});
+*/
 }

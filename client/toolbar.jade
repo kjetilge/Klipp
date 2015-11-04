@@ -6,3 +6,17 @@ template(name="toolbar")
     +uploader
     +progressBar
     span(id="time")
+
+//Note: The id matches that in uploader.js
+template(name="uploader")
+  +unless showFileInput
+    input(id="slingshot_upload" type="file" name="datafile" size="40")
+
+  +if showUploadButton 
+    button(type="button" class="upload") Start opplasting
+  +if showCancelButton
+    button(type="button" class="cancel") Avbryt opplasting
+  
+template(name="progressBar")
+  if isUploading
+    h4 {{progress}}%

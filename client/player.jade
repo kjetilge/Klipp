@@ -25,17 +25,14 @@ template(name="videoNav")
 
 template(name="videoNavItem")
   div(class="video-select" id="{{_id}}")
-    div(class='filename') {{fileName}}
-    +if title
-      div(class='title') {{title}}
-    +else
-      div(class='title') NO TITLE
     +if splashId
       div
         img(src="{{splashSmall}}" width="100px")
     +else
       div
         img(class="preview" src="images/no-video.jpg" width="100px")
+    div(class='title') {{> editableText collection="videos" field="title" acceptEmpty=true placeholder="ingen tittel" }}
+    div(class='filename') {{fileName}}
   div(class="itemActions")
      button(class="remove-video") X
 
@@ -46,7 +43,9 @@ template(name="chapters")
       +chapter
 
 template(name="chapter")
-  span(class="chapter")
+  span(class="chapter" style="display: inline-block")
+    div
+      button(class="delete") X
     +if url store="chapterImage"
       img(src="{{url store='chapterImage'}}")
     +else
@@ -55,6 +54,7 @@ template(name="chapter")
         p(class="uploadProgress") uploading..{{uploadProgress}}%
       else
         p(class="uploadProgress") processing..
+    div {{> editableText collection="chapters" field="title" placeholder="ingen tittel" acceptEmpty=true}}
           
 template(name="videoNotFound")
   if Template.subscriptionsReady

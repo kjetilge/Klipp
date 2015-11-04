@@ -97,16 +97,16 @@ Template.chapters.helpers({
 	}
 })
 Template.chapter.events({
-  'click': function () {
-    console.log(this);
+  'click button.delete': function () {
+    //console.log(this);
+    Chapters.remove(this._id);
+  },
+  'click img': function () {
+    var video = $("#video")[0]
+    video.currentTime = this.time;
   }
 })
 Template.chapter.onRendered(function () {
-  imgix.fluid({
-    updateOnResizeDown: true,
-    pixelStep: 5,
-    autoInsertCSSBestPractices: true
-  });
 })
 
 /******************* VIDEO NAVIGATION *******************/
@@ -120,9 +120,10 @@ Template.videoNav.created = function () {
   Meteor.subscribe('splashImages');
 }
 Template.videoNav.events({ /********** CREATE VIDEO ***********/
-  'click button': function () { //.add-video
+  'click button.add-video': function () { //.add-video
     console.log("add video")
-    Videos.insert({title: "NO TITLE"}, function (err, res) {
+    Session.set('videoLoaded', false)
+    Videos.insert({title: "ingen tittel"}, function (err, res) { //title: "Ingen tittel"
       if(res) //videoId
         FlowRouter.setQueryParams({videoId: res});
       else {
@@ -176,7 +177,7 @@ Template.videoNotFound.helpers({
 
 Template.videoNotFound.events({
   'click button': function () {
-    Videos.insert({title: "NO TITLE"}, function (err, res) {
+    Videos.insert({title: "min første video"}, function (err, res) {
       console.log(res)
       FlowRouter.go("/videoplayer?videoId="+res)
     })
