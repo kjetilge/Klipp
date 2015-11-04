@@ -31,7 +31,7 @@ template(name="videoNavItem")
     +else
       div
         img(class="preview" src="images/no-video.jpg" width="100px")
-    div(class='title') {{> editableText collection="videos" field="title" acceptEmpty=true placeholder="ingen tittel" }}
+    div(class='title') {{> editableText collection="videos" field="title"}}
     div(class='filename') {{fileName}}
   div(class="itemActions")
      button(class="remove-video") X
@@ -54,8 +54,11 @@ template(name="chapter")
         p(class="uploadProgress") uploading..{{uploadProgress}}%
       else
         p(class="uploadProgress") processing..
-    div {{> editableText collection="chapters" field="title" placeholder="ingen tittel" acceptEmpty=true}}
-          
+    div
+      span(class='title') {{> editableText collection="cfs.chapters.filerecord" field="title"}}
+      button(class="adjust-time") Time
+      button(class="adjust-image") Img
+
 template(name="videoNotFound")
   if Template.subscriptionsReady
     h1 Video ikke funnet

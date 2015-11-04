@@ -101,10 +101,22 @@ Template.chapter.events({
     //console.log(this);
     Chapters.remove(this._id);
   },
-  'click img': function () {
+  'click img': function () { //Go to time
     var video = $("#video")[0]
     video.currentTime = this.time;
+  },
+  'click button.adjust-time': function () {
+    var video = $("#video")[0]
+    var time = video.currentTime;
+    Chapters.update(this._id, {$set: {time: time}});
+  },
+  'click button.adjust-image': function () { //todo: store image in a shadow collection and generate new upon video uploaded.
+    var title = this.title;
+    var id = Chapters.remove(this._id);
+    console.log("removed", id)
+    updateChapterImage(title, time); //Keep the time and title in the new image
   }
+
 })
 Template.chapter.onRendered(function () {
 })
@@ -189,4 +201,29 @@ Template.html5Player.created = function () {
   self.autorun(function() {
     self.subscribe('videos');
   });
+}
+
+/************************ methods (todo: make a library) ***************************/
+
+//todo: store image in a shadow collection and generate new upon video uploaded.
+function updateChapterImage(title, time) {
+  var video = $("video").get(0);
+  var time = video.currentTime;
+  var canvas = document.createElement("canvas");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d')
+        .drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  var img = document.createElement("img");
+  img.src = canvas.toDataURL();
+
+  videoId = FlowRouter.getQueryParam('videoId');
+  var id = Chapters.insert(canvas.toDataURL(), function(err, res) {
+    if(err) {
+      alert(err);
+    } else {
+      Chapters.update(res._id, {$set: {videoId: videoId, time: time, title: title}} );
+    }
+  })
 }

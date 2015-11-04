@@ -76,7 +76,8 @@ Template.progressBar.helpers({
     progress: function () {
         var upload = uploader.get();
         if (upload)
-            return Math.round(upload.progress() * 100) || 0 ;
+            //return upload.progress() * 100;//Math.round(upload.progress() * 100) || 0 ;
+          return truncate(upload.progress() * 100, 1) || 0
     }
 });
 var upload;
@@ -155,3 +156,8 @@ function previewSplash(videoId) {
   img.src = canvas.toDataURL();
   console.log(this);
 }
+
+var truncate = function (numberToBeTruncated, numberOfDecimalsToKeep) {
+    var theNumber = numberToBeTruncated.toFixed(++numberOfDecimalsToKeep);
+    return +(theNumber.slice(0, --theNumber.length));
+};
