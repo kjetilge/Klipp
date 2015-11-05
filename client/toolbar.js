@@ -14,32 +14,35 @@ Template.toolbar.events({
   'click button.splash-shot': function (e, t) {
     //Get the video time
     var video = $("#video")[0];
+    var x = video.videoWidth;
+    var y = video.videoHeight;
+    var aspect = x/y;
+    var splashWidth = 1920;
+    var splashHeight =  truncate((splashWidth / aspect), 0)
+
     var time = video.currentTime
 
     var videoId = FlowRouter.getQueryParam('videoId');
     var vid = Videos.findOne(videoId);
 
-    //If video is not upoaded yet, store the splash time
-    if(!vid.downloadUrl) {
-      console.log("capure off-line splash")
-      //capture a still and show it in navItem
-      Session.set('splashTime', time)
-      //todo: Show the splash in the Nav Item
-      previewSplash(videoId);
-      return;
-    }
-    var vidUrl = vid.downloadUrl;
+    //capture a still and show it in navItem
+    Session.set('splashTime', time)
+    previewSplash(videoId);
 
-    console.log("vidUrl", vidUrl)
-    Meteor.call('makeSplash', vidUrl, time, function (err,res) {
-      if(res) {
-        console.log("splashId", res)
-        //todo: sjekk om video har splash fra før og slett den gamle.
-        Videos.update(videoId, {$set: {splashId: res._id}});
-      } else {
-        console.log(err);
-      }
-    })
+    //If video is uploaded make a still from original serverside
+    if(vid && vid.downloadUrl) {
+      var vidUrl = vid.downloadUrl;
+      console.log("vidUrl", vidUrl)
+      Meteor.call('makeSplash', vidUrl, time, splashWidth, splashHeight, function (err,res) {
+        if(res) {
+          console.log("splashId", res)
+          //todo: sjekk om video har splash fra før og slett den gamle.
+          Videos.update(videoId, {$set: {splashId: res._id}});
+        } else {
+          console.log(err);
+        }
+      })
+    }
   },
   'change #slingshot_upload': function () {
     Session.set('videoLoaded', true);
@@ -83,6 +86,16 @@ Template.progressBar.helpers({
 var upload;
 Template.uploader.events({
   'click button.upload': function (e, template) {
+    /* DIMENSIONS */
+    var video = $("#video")[0];
+    var AutoSplashTime = video.duration / 2;
+    var x = video.videoWidth;
+    var y = video.videoHeight;
+    var aspect = x/y;
+    SplashWidth = 1920;
+    SplashHeight =  truncate((SplashWidth / aspect), 0);
+    /* END DIMENSIONS */
+
     var videoId = FlowRouter.getQueryParam('videoId');
     VID = videoId;
     upload = new Slingshot.Upload("videoUploads", {videoId: videoId}); //videoId ADD meta-context
@@ -97,12 +110,12 @@ Template.uploader.events({
         } else {
             Session.set("uploadFile", null);
             var splashTime = Session.get("splashTime");
-            var time = '1.10';
+            var time = AutoSplashTime;
             if(splashTime) {
               time = splashTime;
-              Session.set(null);
-            }
-            splashId = Meteor.call('makeSplash', downloadUrl, time, (err, res) => {
+              Session.set("splashTime", null);
+            } //vidUrl, time, splashWidth, splashHeight
+            splashId = Meteor.call('makeSplash', downloadUrl, time, SplashWidth, SplashHeight, (err, res) => {
             Videos.update(VID, {$set: {downloadUrl: downloadUrl, splashId: res._id}})
           });
         }
@@ -153,8 +166,9 @@ function previewSplash(videoId) {
 
   //var img = document.createElement("img");
   var img = $(".video-select#"+videoId+" img")[0];
+  console.log(img);
   img.src = canvas.toDataURL();
-  console.log(this);
+
 }
 
 var truncate = function (numberToBeTruncated, numberOfDecimalsToKeep) {

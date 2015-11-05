@@ -5,9 +5,9 @@ var vPath = '/Users/kjetil/Documents/Development/DevKlipp/CollectionFS-Demo/publ
 //var thumbPath = "/Users/kjetil/Documents/Development/DevKlipp/SPLASH_FILES/"
 var thumbPath = "/splash/"
 Meteor.methods({
-  makeSplash: function (vidUrl, time) {
+  makeSplash: function (vidUrl, time, splashWidth, splashHeight) {
     var splashPath = Async.runSync(function(done) {
-            makeSplash(vidUrl, time, done)
+            makeSplash(vidUrl, time, splashWidth, splashHeight, done)
           });
     if(splashPath.error) {
       throw new Meteor.Error(error, "kunne ikke lage splash")
@@ -18,11 +18,14 @@ Meteor.methods({
     }
   }
 })
-
-function makeSplash(vidUrl, time, done) {
+//Todo: controll acpect. Let y be variable
+function makeSplash(vidUrl, time, splashWidth, splashHeight, done) {
   console.log("vidUrl", vidUrl)
+  console.log("time", time)
+  var size = splashWidth+"x"+splashHeight
+  console.log("size", size)
   var splashImagePath = new ffmpeg({ source: vidUrl})
-    .withSize('1920x1080')
+    .withSize(size)
     .toFormat('png')
     .takeScreenshots({
         count: 1,

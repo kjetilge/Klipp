@@ -4,7 +4,7 @@
 # but you can also edit it by hand.
 
 standard-app-packages
-#neonaleon:gss
+neonaleon:gss
 cfs:standard-packages
 cfs:gridfs
 cfs:filesystem

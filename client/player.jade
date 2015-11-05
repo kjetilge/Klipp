@@ -17,9 +17,11 @@ template(name="html5Player")
     
 // VIDEO NAV
 template(name="videoNav")
-  div(id="video-actions")
-    button(class="add-video") Legg til video
   div(id="video-nav")
+    //Button to add videos
+    div(id="video-actions")
+      button(class="add-video") Legg til video  
+    //List of videos
     +each videos
       +videoNavItem
 

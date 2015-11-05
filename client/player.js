@@ -93,7 +93,7 @@ Template.html5Player.onRendered(function () {
 Template.chapters.helpers({
 	chapters: function () {
     var videoId = FlowRouter.getQueryParam('videoId');
-		return Chapters.find({videoId: videoId});
+		return Chapters.find({videoId: videoId}, {sort: {time: 1}});
 	}
 })
 Template.chapter.events({
