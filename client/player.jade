@@ -5,6 +5,7 @@ template(name="player")
     +Template.dynamic(template=toolbarArea)
     +Template.dynamic(template=chaptersArea)
   div(class="right")
+    +Template.dynamic(template=issueNavArea)
     +Template.dynamic(template=videoNavArea)
 
 // ****************** SUB TEMPLATES ******************
@@ -14,6 +15,25 @@ template(name="html5Player")
     video(id="video" type="video/mp4" src="{{videoUrl}}" poster="{{posterImageUrl}}" controls crossOrigin="Anonymous" width="600")
   else Template.subscriptionsReady
     h1 loading ..
+    
+// Issue (Utgave)
+template(name="issueNav")
+  div(id="issue-nav")
+    div(id="issue-actions")
+      button(class="add-issue") Legg til utgave  
+      //List of videos
+      +each issues
+        +issue
+        
+template(name="issueItems")
+  div(class="issue-select" id="{{_id}}")
+    +if frontSplashId
+      div
+        img(src="{{frontSplashSmall}}" width="100px")
+    +else
+      div
+        img(class="preview" src="images/no-video.jpg" width="100px")
+    div(class='title') {{> editableText collection="issues" field="title"}}
     
 // VIDEO NAV
 template(name="videoNav")

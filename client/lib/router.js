@@ -7,7 +7,8 @@ FlowRouter.route('/videoplayer', {
         videoArea: "html5Player",
         toolbarArea: "toolbar",
         chaptersArea: "chapters",
-        videoNavArea: "videoNav"
+        videoNavArea: "videoNav",
+        issueNavArea: "issueNav"
       });
     },
     triggersExit: [function () {

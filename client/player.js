@@ -88,7 +88,15 @@ Template.html5Player.onRendered(function () {
   }, false);
 })
 
-
+/******************* ISSUES *********************/
+/*
+Template.issues.helpers({
+	issues: function () {
+    var issueId = FlowRouter.getParam('videoId');
+		return Chapters.find({videoId: videoId}, {sort: {time: 1}});
+	}
+})
+*/
 /******************* CHAPTERS *******************/
 Template.chapters.helpers({
 	chapters: function () {

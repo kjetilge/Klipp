@@ -17,8 +17,8 @@ videoNavWidth == ::window[width] - videoViewerWidth;
   background-color: brown;
   right: == ::window[right];
   width: == videoNavWidth;
-  top: == $top;
-  bottom: == $bottom;
+  //top: == $top;
+  //bottom: == $bottom;
 }
 
 /*
