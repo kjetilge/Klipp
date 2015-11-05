@@ -117,6 +117,7 @@ Template.uploader.events({
             } //vidUrl, time, splashWidth, splashHeight
             splashId = Meteor.call('makeSplash', downloadUrl, time, SplashWidth, SplashHeight, (err, res) => {
             Videos.update(VID, {$set: {downloadUrl: downloadUrl, splashId: res._id}})
+            Session.set('videoLoaded', false);
           });
         }
       });
