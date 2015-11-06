@@ -1,4 +1,12 @@
 /******************* HTML5 PLAYER *******************/
+Session.setDefault("uploadFile", false)
+
+Template.html5Player.created = function () {
+  var self = this;
+  self.autorun(function() {
+    self.subscribe('videos');
+  });
+}
 Template.html5Player.helpers({
   'posterImageUrl': function () {
     var notFound = true;
@@ -55,8 +63,6 @@ Template.html5Player.created = function () {
   })
 }
 
-Session.setDefault("uploadFile", false)
-
 Template.html5Player.onRendered(function () {
   var time = FlowRouter.getQueryParam('time');
   if(time) {
@@ -93,16 +99,125 @@ Template.html5Player.onRendered(function () {
   }, false);
 })
 
+
+
+
 /******************* ISSUES *********************/
-/*
-Template.issues.helpers({
-	issues: function () {
-    var issueId = FlowRouter.getParam('videoId');
-		return Chapters.find({videoId: videoId}, {sort: {time: 1}});
+
+Template.issueNav.helpers({
+	issueItems: function () {
+		return Issues.find({});
 	}
 })
-*/
+
+Template.issueNav.events({
+  'click button.add-issue': function () {
+    var no = Issues.find().count()
+    var issueId = Issues.insert({title: "Klipp "+no+61, subtitle: "mye moro"});
+    var videoId = Videos.insert({title: "video til no:"+no+61, issueId: issueId});
+    var params = {issueId: issueId, videoId: videoId}
+    var path = FlowRouter.path("blogPostRoute", params);
+    FlowRouter.go("videoplayer", params)
+  }
+})
+Template.issueItem.events({
+  'click button.remove-issue':function () {
+    console.log("remove issue", this._id)
+    Issues.remove(this._id);
+    var issue = Issues.findOne();
+    if(issue) {
+      var videoId = issue.videos().fetch()[0];
+      var params = {videoId: videoId, issueId: issue._id}
+      Router.go("videoplayer", params);
+    } else {
+
+    }
+  }
+})
+
+Template.issueNav.onCreated(function () {
+  console.log("Issues")
+  Meteor.subscribe("issues");
+})
+
+
+
+
+
+/******************* VIDEO NAVIGATION *******************/
+
+Template.videoNav.helpers({
+  videos: function () {
+    return Videos.find();
+  }
+})
+Template.videoNav.created = function () {
+  Meteor.subscribe("videos");
+  Meteor.subscribe('splashImages');
+}
+Template.videoNav.events({ /********** CREATE VIDEO ***********/
+  'click button.add-video': function () { //.add-video
+    console.log("add video")
+    Session.set('videoLoaded', false)
+    var issueId = FlowRouter.getParam('issueId');
+    Videos.insert({title: "ingen tittel", issueId: issueId}, function (err, res) { //title: "Ingen tittel"
+      if(res) //videoId
+        FlowRouter.setParams({videoId: res});
+      else {
+        Session.set("errorMessage", "Kunne ikke opptrette ny video: "+err);
+      }
+    })
+  }
+})
+Template.videoNavItem.events({
+  'click .video-select': function () {
+    Session.set("uploadFile", null);
+    FlowRouter.setParams({videoId: this._id});
+  },
+  'click button.remove-video': function () {
+    Session.set("uploadFile", null);
+    var issueId = FlowRouter.getParam("issueId");
+    var count = Videos.find({issueId: issueId}).count();
+    console.log("count", count)
+    if(count > 1) {
+      Videos.remove(this._id, (err, res) => {
+        if(res) {
+          //Go to one of the remaining videos in the issue
+          var vid = Videos.findOne({issueId: issueId});
+          var params = {issueId: issueId, videoId: vid._id}
+          console.log("params", params)
+          if(vid && vid._id) {
+            FlowRouter.go("videoplayer", params);
+          }
+          else {
+            throw new Meteor.Error("kunne ikke slette video", err);
+          }
+        }
+      })
+    } else {
+      alert("En utgave må ha minst én video");
+    }
+
+  }
+})
+
+Template.videoNavItem.helpers({
+  splashSmall: function () {
+    var videoId = this._id;
+    vid = Videos.findOne(videoId);
+    //console.log("VIDEO",vid)
+    var splash = SplashImages.findOne(vid.splashId);
+    //console.log("splash",splash)
+    return splash.url({store: "splashSmall"});
+  },
+})
+
+
+
+
+
 /******************* CHAPTERS *******************/
+
 Template.chapters.helpers({
 	chapters: function () {
     var videoId = FlowRouter.getParam('videoId');
@@ -134,60 +249,7 @@ Template.chapter.events({
 Template.chapter.onRendered(function () {
 })
 
-/******************* VIDEO NAVIGATION *******************/
-Template.videoNav.helpers({
-  videos: function () {
-    return Videos.find();
-  }
-})
-Template.videoNav.created = function () {
-  Meteor.subscribe("videos");
-  Meteor.subscribe('splashImages');
-}
-Template.videoNav.events({ /********** CREATE VIDEO ***********/
-  'click button.add-video': function () { //.add-video
-    console.log("add video")
-    Session.set('videoLoaded', false)
-    Videos.insert({title: "ingen tittel"}, function (err, res) { //title: "Ingen tittel"
-      if(res) //videoId
-        FlowRouter.setQueryParams({videoId: res});
-      else {
-        Session.set("errorMessage", "Kunne ikke opptrette ny video: "+err);
-      }
-    })
-  }
-})
-Template.videoNavItem.events({
-  'click .video-select': function () {
-    Session.set("uploadFile", null);
-    FlowRouter.setParams({videoId: this._id});
-  },
-  'click button.remove-video': function () {
-    Session.set("uploadFile", null);
-    Videos.remove(this._id, function (err, res) {
-      if(res) {
-        var vid = Videos.findOne();
-        if(vid && vid._id) {
-          FlowRouter.go("/videoplayer/"+vid._id);
-        }
-        else {
-          FlowRouter.go("/video-ikke-funnet")
-        }
-      }
-    })
-  }
-})
-
-Template.videoNavItem.helpers({
-  splashSmall: function () {
-    var videoId = this._id;
-    vid = Videos.findOne(videoId);
-    //console.log("VIDEO",vid)
-    var splash = SplashImages.findOne(vid.splashId);
-    //console.log("splash",splash)
-    return splash.url({store: "splashSmall"});
-  },
-})
+/***************** VIDEO NOT FOUND *****************/
 
 Template.videoNotFound.helpers({
   'videoId': function () {
@@ -209,12 +271,6 @@ Template.videoNotFound.events({
   }
 })
 
-Template.html5Player.created = function () {
-  var self = this;
-  self.autorun(function() {
-    self.subscribe('videos');
-  });
-}
 
 /************************ methods (todo: make a library) ***************************/
 
@@ -244,7 +300,7 @@ function updateChapterImage(title, time) {
 function goToTime(time) {
   var video = $("#video")[0];
   if(video){
-       console.log("Video!", video.readyState === 4)
+       //console.log("Video!", video.readyState === 4)
        video.addEventListener('loadedmetadata', function() {
        video.currentTime = FlowRouter.getQueryParam('time');
        console.log("Video ready, skipping to", time)

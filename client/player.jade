@@ -22,18 +22,20 @@ template(name="issueNav")
     div(id="issue-actions")
       button(class="add-issue") Legg til utgave  
       //List of videos
-      +each issues
-        +issue
+      +each issueItems
+        +issueItem
 
-template(name="issueItems")
+template(name="issueItem")
   div(class="issue-select" id="{{_id}}")
     +if frontSplashId
       div
         img(src="{{frontSplashSmall}}" width="100px")
     +else
       div
-        img(class="preview" src="images/no-video.jpg" width="100px")
+        img(class="preview" src="/images/no-video.jpg" width="100px")
     div(class='title') {{> editableText collection="issues" field="title"}}
+  div(class="itemActions")
+     button(class="remove-issue") X
 
 // VIDEO NAV
 template(name="videoNav")
@@ -83,8 +85,11 @@ template(name="chapter")
 
 template(name="videoNotFound")
   if Template.subscriptionsReady
-    h1 Video ikke funnet
+    
     if videoId
+      h1 Videoen har blitt slettet eller lenken er feil
       p Gå til
         a(href="videoplayer?videoId={{videoId}}") videoavspiller
-    button Opprett video
+    else
+      h1 Ingen video funnet
+      button Opprett video

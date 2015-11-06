@@ -1,11 +1,16 @@
 //WebSocket connection to 'ws://localhost:3000/sockjs/740/t4rbwr7c/websocket' failed: WebSocket is closed before the connection is established.
 
-FlowRouter.route('/videoplayer/:videoId', {
+FlowRouter.route('/videoplayer/:issueId/:videoId', {
     action: function(params, queryParams) {
       console.log("Query Params:", queryParams);
       var video = $("#video")[0];
-      if(video)
-        video.currentTime = FlowRouter.getQueryParam('time');
+      if(video) {
+        var time = FlowRouter.getQueryParam('time')
+        var time = Number(FlowRouter.getQueryParam('time'))
+        if(time)
+          video.currentTime = parseFloat(time);
+      }
+
 
       BlazeLayout.render('player', {
         videoArea: "html5Player",
@@ -15,18 +20,17 @@ FlowRouter.route('/videoplayer/:videoId', {
         issueNavArea: "issueNav"
       });
     },
-    triggersExit: [function () {
-      /*
-      var player = $('#video')[0];
-      var sources = player.getElementsByTagName('source');
-      console.log("trigger");
-      sources[0].src = "";*/
-    }]
-    //name: "<name for the route>" // optional
+    name: "videoplayer" // optional
 });
 FlowRouter.route('/video-ikke-funnet', {
     action: function() {
       BlazeLayout.render('videoNotFound');
+    }
+  });
+
+FlowRouter.route('/', {
+    action: function() {
+      BlazeLayout.render('home');
     }
   });
 

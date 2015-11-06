@@ -1,5 +1,11 @@
 Videos = new Mongo.Collection("videos")
 
+Videos.helpers({
+  chapters: function () {
+    return Chapters.find({videoId: this._id})
+  }
+})
+
 if(Meteor.isServer) {
   Meteor.publish("videos", function () {
     return Videos.find({})
@@ -7,7 +13,6 @@ if(Meteor.isServer) {
   Meteor.publish("singleVideo", function (videoId) {
     return Videos.find({_id: videoId})
   })
-
   Meteor.startup(function () {
     /*
     if( Videos.find().count() === 0) {
