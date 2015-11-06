@@ -22,7 +22,7 @@ Template.toolbar.events({
 
     var time = video.currentTime
 
-    var videoId = FlowRouter.getQueryParam('videoId');
+    var videoId = FlowRouter.getParam('videoId');
     var vid = Videos.findOne(videoId);
 
     //capture a still and show it in navItem
@@ -96,7 +96,7 @@ Template.uploader.events({
     SplashHeight =  truncate((SplashWidth / aspect), 0);
     /* END DIMENSIONS */
 
-    var videoId = FlowRouter.getQueryParam('videoId');
+    var videoId = FlowRouter.getParam('videoId');
     VID = videoId;
     upload = new Slingshot.Upload("videoUploads", {videoId: videoId}); //videoId ADD meta-context
     file = template.find("#slingshot_upload").files[0];
@@ -129,7 +129,7 @@ Template.uploader.events({
     Session.set("uploadFile", null);
     Session.set("isUploading", false)
     Session.set('videoLoaded', false);
-    videoId = FlowRouter.getQueryParam('videoId');
+    videoId = FlowRouter.getParam('videoId');
     FlowRouter.go("/videoplayer?videoId="+videoId);
     //todo reload the previous video
   }
@@ -146,7 +146,7 @@ function captureStill() {
   var img = document.createElement("img");
   img.src = canvas.toDataURL();
   console.log(this);
-  videoId = FlowRouter.getQueryParam('videoId');
+  videoId = FlowRouter.getParam('videoId');
   var id = Chapters.insert(canvas.toDataURL(), function(err, res) {
     if(err) {
       alert(err);

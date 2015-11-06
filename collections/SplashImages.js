@@ -46,22 +46,6 @@ SplashImages = new FS.Collection("splashImages", {
         }
     }
 });
-/*
-Chapters.allow({
-    insert: function(userId, file) {
-        return true;
-    },
-    update: function(userId, file, fields, modifier) {
-        return true;
-    },
-    remove: function(userId, file) {
-        return true;
-    },
-    download: function() {
-        return true;
-    }
-});
-*/
 
 if(Meteor.isServer){
     Meteor.publish('splashImage', function (splashId) {
