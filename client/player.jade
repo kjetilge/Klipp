@@ -24,7 +24,7 @@ template(name="issueNav")
       //List of videos
       +each issues
         +issue
-        
+
 template(name="issueItems")
   div(class="issue-select" id="{{_id}}")
     +if frontSplashId
@@ -34,7 +34,7 @@ template(name="issueItems")
       div
         img(class="preview" src="images/no-video.jpg" width="100px")
     div(class='title') {{> editableText collection="issues" field="title"}}
-    
+
 // VIDEO NAV
 template(name="videoNav")
   div(id="video-nav")

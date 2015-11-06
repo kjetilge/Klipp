@@ -145,7 +145,6 @@ function captureStill() {
 
   var img = document.createElement("img");
   img.src = canvas.toDataURL();
-  console.log(this);
   videoId = FlowRouter.getParam('videoId');
   var id = Chapters.insert(canvas.toDataURL(), function(err, res) {
     if(err) {

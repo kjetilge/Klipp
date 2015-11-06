@@ -2,7 +2,11 @@
 
 FlowRouter.route('/videoplayer/:videoId', {
     action: function(params, queryParams) {
-      //console.log("Query Params:", queryParams);
+      console.log("Query Params:", queryParams);
+      var video = $("#video")[0];
+      if(video)
+        video.currentTime = FlowRouter.getQueryParam('time');
+
       BlazeLayout.render('player', {
         videoArea: "html5Player",
         toolbarArea: "toolbar",

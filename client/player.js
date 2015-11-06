@@ -17,7 +17,7 @@ Template.html5Player.helpers({
       }
     }
     else {
-      //FlowRouter.go('/video-ikke-funnet');
+      FlowRouter.go('/video-ikke-funnet');
     }
   },
   videoUrl: function () { //Slingshot
@@ -28,8 +28,10 @@ Template.html5Player.helpers({
     var videoId = FlowRouter.getParam('videoId');
     var vid = Videos.findOne({_id: videoId});
     if(vid && vid._id) { //Hvis videoen er opprettet
-      if(vid.downloadUrl)
+      if(vid.downloadUrl) {
         return vid.downloadUrl
+      }
+
       else {
         return "/video/no-video.mp4";
       }
@@ -54,11 +56,15 @@ Template.html5Player.created = function () {
 }
 
 Session.setDefault("uploadFile", false)
-Template.html5Player.onRendered(function () {
-  /************* LOAD VIDEO INTO FORM *************/
-  var video = $("#video")[0],
-      input = document.getElementById('slingshot_upload');
 
+Template.html5Player.onRendered(function () {
+  var time = FlowRouter.getQueryParam('time');
+  if(time) {
+    goToTime(time);
+  }
+
+  input = document.getElementById('slingshot_upload');
+  /************* LOAD VIDEO INTO FORM *************/
   input.addEventListener('change', function (evt) {
       var reader = new window.FileReader(),
           file = evt.target.files[0],
@@ -70,7 +76,7 @@ Template.html5Player.onRendered(function () {
           url = reader.createObjectURL(file);
           Session.set("uploadFile", url); /********** LOAD VIDEO *********/
           $("#video")[0].poster="";
-          //reader.revokeObjectURL(url);  //free up memory
+          //reader.revokeObjectURL(url);  //free up memory ???
           return;
       }
 
@@ -110,7 +116,7 @@ Template.chapter.events({
   },
   'click img': function () { //Go to time
     var video = $("#video")[0]
-    video.currentTime = this.time;
+    FlowRouter.setQueryParams({time: this.time});
   },
   'click button.adjust-time': function () {
     var video = $("#video")[0]
@@ -154,7 +160,7 @@ Template.videoNav.events({ /********** CREATE VIDEO ***********/
 Template.videoNavItem.events({
   'click .video-select': function () {
     Session.set("uploadFile", null);
-    FlowRouter.setQueryParams({videoId: this._id});
+    FlowRouter.setParams({videoId: this._id});
   },
   'click button.remove-video': function () {
     Session.set("uploadFile", null);
@@ -169,9 +175,9 @@ Template.videoNavItem.events({
         }
       }
     })
-
   }
 })
+
 Template.videoNavItem.helpers({
   splashSmall: function () {
     var videoId = this._id;
@@ -233,4 +239,19 @@ function updateChapterImage(title, time) {
       Chapters.update(res._id, {$set: {videoId: videoId, time: time, title: title}} );
     }
   })
+}
+
+function goToTime(time) {
+  var video = $("#video")[0];
+  if(video){
+       console.log("Video!", video.readyState === 4)
+       video.addEventListener('loadedmetadata', function() {
+       video.currentTime = FlowRouter.getQueryParam('time');
+       console.log("Video ready, skipping to", time)
+     }, false);
+  } else {
+     setTimeout(function(){
+       goToTime(time)
+     }, 50)
+  }
 }
