@@ -32,7 +32,7 @@ template(name="videoNavItem")
         img(src="{{splashSmall}}" width="100px")
     +else
       div
-        img(class="preview" src="images/no-video.jpg" width="100px")
+        img(class="preview" src="/images/no-video.jpg" width="100px")
     div(class='title') {{> editableText collection="videos" field="title"}}
     div(class='filename') {{fileName}}
   div(class="itemActions")

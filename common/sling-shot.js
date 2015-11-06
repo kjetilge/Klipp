@@ -33,7 +33,7 @@ if (Meteor.isClient) {
   /*
   Template.uploader.events({
     'click button.upload': function (e, template) {
-      var videoId = FlowRouter.getQueryParam('videoId');
+      var videoId = getParam('videoId');
       VID = videoId;
       var upload = new Slingshot.Upload("myFileUploads", {videoId: videoId}); //videoId ADD meta-context
       file = template.find("#slingshot_upload").files[0];

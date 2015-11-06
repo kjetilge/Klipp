@@ -2,14 +2,14 @@
 Template.html5Player.helpers({
   'posterImageUrl': function () {
     var notFound = true;
-    var videoId = FlowRouter.getQueryParam('videoId');
+    var videoId = FlowRouter.getParam('videoId');
     var vid = Videos.findOne({_id: videoId});
     if(vid && vid._id){ //VIDEO WITHOUT Videofile
       //console.log("vid id", vid._id)
       if(!vid.downloadUrl) {
         //No video file yet
         //console.log("no filename", vid.downloadUrl)
-        return 'images/no-video.jpg';
+        return '/images/no-video.jpg';
       } else {
         console.log("vid FILENAME")
         var splashImage = SplashImages.findOne(vid.splashId);
@@ -25,15 +25,14 @@ Template.html5Player.helpers({
     if(fileUrl)
       return fileUrl
 
-    var videoId = FlowRouter.getQueryParam('videoId');
+    var videoId = FlowRouter.getParam('videoId');
     var vid = Videos.findOne({_id: videoId});
     if(vid && vid._id) { //Hvis videoen er opprettet
       if(vid.downloadUrl)
         return vid.downloadUrl
       else {
-        return "video/no-video.mp4";
+        return "/video/no-video.mp4";
       }
-
     }
     else {
       FlowRouter.go('/video-ikke-funnet');
@@ -44,7 +43,7 @@ Template.html5Player.created = function () {
   Session.set("uploadFile", null)
   var self = this;
   self.autorun(function() {
-    var videoId = FlowRouter.getQueryParam('videoId');
+    var videoId = FlowRouter.getParam('videoId');
     self.subscribe('singleVideo', videoId);
 
     FlowRouter.subsReady("singleVideo", videoId, function() { //single video is available when signle video is available
@@ -92,7 +91,7 @@ Template.html5Player.onRendered(function () {
 /******************* CHAPTERS *******************/
 Template.chapters.helpers({
 	chapters: function () {
-    var videoId = FlowRouter.getQueryParam('videoId');
+    var videoId = FlowRouter.getParam('videoId');
 		return Chapters.find({videoId: videoId}, {sort: {time: 1}});
 	}
 })
@@ -155,7 +154,7 @@ Template.videoNavItem.events({
       if(res) {
         var vid = Videos.findOne();
         if(vid && vid._id) {
-          FlowRouter.go("/videoplayer?videoId="+vid._id);
+          FlowRouter.go("/videoplayer/"+vid._id);
         }
         else {
           FlowRouter.go("/video-ikke-funnet")
@@ -191,7 +190,7 @@ Template.videoNotFound.events({
   'click button': function () {
     Videos.insert({title: "min første video"}, function (err, res) {
       console.log(res)
-      FlowRouter.go("/videoplayer?videoId="+res)
+      FlowRouter.go("/videoplayer/"+res)
     })
   }
 })
@@ -218,7 +217,7 @@ function updateChapterImage(title, time) {
   var img = document.createElement("img");
   img.src = canvas.toDataURL();
 
-  videoId = FlowRouter.getQueryParam('videoId');
+  videoId = FlowRouter.getParam('videoId');
   var id = Chapters.insert(canvas.toDataURL(), function(err, res) {
     if(err) {
       alert(err);
