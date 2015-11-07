@@ -121,6 +121,10 @@ Template.issueNav.events({
   }
 })
 Template.issueItem.events({
+  'click .issueItem': function () {
+    Session.set("uploadFile", null);
+    FlowRouter.setParams({videoId: this._id});
+  },
   'click button.remove-issue':function () {
     console.log("remove issue", this._id)
     Issues.remove(this._id);
@@ -148,7 +152,9 @@ Template.issueNav.onCreated(function () {
 
 Template.videoNav.helpers({
   videos: function () {
-    return Videos.find();
+    var issueId = FlowRouter.getParam('issueId');
+    console.log("issueId", issueId)
+    return Videos.find({issueId: issueId});
   }
 })
 Template.videoNav.created = function () {
@@ -172,7 +178,7 @@ Template.videoNav.events({ /********** CREATE VIDEO ***********/
 Template.videoNavItem.events({
   'click .video-select': function () {
     Session.set("uploadFile", null);
-    FlowRouter.setParams({videoId: this._id});
+    //FlowRouter.setParams({videoId: this._id});
   },
   'click button.remove-video': function () {
     Session.set("uploadFile", null);

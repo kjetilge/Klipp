@@ -23,6 +23,6 @@ Issues.helpers({
     return Videos.find({issueId: this._id})
   },
   firstVideo: function () {
-    return Videos.findOne();
+    return Videos.findOne({issueId: this._id});
   }
 })
