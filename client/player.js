@@ -180,17 +180,23 @@ Template.videoNavItem.events({
     var count = Videos.find({issueId: issueId}).count();
     console.log("count", count)
     if(count > 1) {
-      Videos.remove(this._id, (err, res) => {
+      var deletedVideoId = this._id;
+      Videos.remove(deletedVideoId, (err, res) => {
         if(res) {
-          //Go to one of the remaining videos in the issue
-          var vid = Videos.findOne({issueId: issueId});
-          var params = {issueId: issueId, videoId: vid._id}
-          console.log("params", params)
-          if(vid && vid._id) {
-            FlowRouter.go("videoplayer", params);
-          }
-          else {
-            throw new Meteor.Error("kunne ikke slette video", err);
+          var currentVideoId = FlowRouter.getParam("videoId");
+          //If the current video is deleted show the first video in this group
+          if(currentVideoId === deletedVideoId) {
+            //Go to one of the remaining videos in the issue
+            var vid = Videos.findOne({issueId: issueId});
+            var params = {issueId: issueId, videoId: vid._id}
+            console.log("params", params)
+            if(vid && vid._id) {
+              console.log("params", params)
+              FlowRouter.go("videoplayer", params);
+            }
+            else {
+              throw new Meteor.Error("kunne ikke slette video", err);
+            }
           }
         }
       })
@@ -252,10 +258,16 @@ Template.chapter.onRendered(function () {
 /***************** VIDEO NOT FOUND *****************/
 
 Template.videoNotFound.helpers({
-  'videoId': function () {
-    var vid = Videos.findOne();
-    if(vid && vid._id)
-      return vid._id;
+  issue: function () {
+    var issue = Issues.findOne();
+    console.log(issue);
+    if(Boolean(issue) && issue._id) {
+      var firstVideo = issue.firstVideo();
+      return {
+        _id: issue._id,
+        firstVideoId: issue.firstVideo()._id
+      }
+    }
     else {
       return false;
     }
@@ -271,6 +283,10 @@ Template.videoNotFound.events({
   }
 })
 
+Template.videoNotFound.onCreated(function () {
+  Meteor.subscribe("issues")
+  Meteor.subscribe("videos")
+})
 
 /************************ methods (todo: make a library) ***************************/
 

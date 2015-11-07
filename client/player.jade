@@ -20,7 +20,7 @@ template(name="html5Player")
     h1 loading ..
     
     
-    
+
     
     
 // Issue (Utgave)
@@ -106,11 +106,10 @@ template(name="chapter")
 //VIDEO MISSING
 template(name="videoNotFound")
   if Template.subscriptionsReady
-    
-    if videoId
+    if issue
       h1 Videoen har blitt slettet eller lenken er feil
       p Gå til
-        a(href="videoplayer?videoId={{videoId}}") videoavspiller
+        a(href="{{pathFor '/utgave/:issue/kurs/:video' issue=issue._id video=issue.firstVideoId}}") videoavspiller
     else
       h1 Ingen video funnet
       button Opprett video
