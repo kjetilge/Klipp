@@ -8,13 +8,20 @@ template(name="player")
     +Template.dynamic(template=issueNavArea)
     +Template.dynamic(template=videoNavArea)
 
+
+
 // ****************** SUB TEMPLATES ******************
-// PLAYER
+
+// HTML5 PLAYER
 template(name="html5Player")
   if Template.subscriptionsReady
     video(id="video" type="video/mp4" src="{{videoUrl}}" poster="{{posterImageUrl}}" controls crossOrigin="Anonymous" width="600")
   else Template.subscriptionsReady
     h1 loading ..
+    
+    
+    
+    
     
 // Issue (Utgave)
 template(name="issueNav")
@@ -26,16 +33,21 @@ template(name="issueNav")
         +issueItem
 
 template(name="issueItem")
-  div(class="issue-select" id="{{_id}}")
-    +if frontSplashId
-      div
-        img(src="{{frontSplashSmall}}" width="100px")
-    +else
-      div
-        img(class="preview" src="/images/no-video.jpg" width="100px")
-    div(class='title') {{> editableText collection="issues" field="title"}}
-  div(class="itemActions")
-     button(class="remove-issue") X
+  a(href="{{pathFor '/utgave/:issue/kurs/:video' issue=_id video=firstVideo._id}}")
+    div(class="issue-select" id="{{_id}}")
+      +if frontSplashId
+        div
+          img(src="{{frontSplashSmall}}" width="100px")
+      +else
+        div
+          img(class="preview" src="/images/no-video.jpg" width="100px")
+      div(class='title') {{> editableText collection="issues" field="title"}}
+    div(class="itemActions")
+       button(class="remove-issue") X
+
+
+
+
 
 // VIDEO NAV
 template(name="videoNav")
@@ -48,17 +60,23 @@ template(name="videoNav")
       +videoNavItem
 
 template(name="videoNavItem")
-  div(class="video-select" id="{{_id}}")
-    +if splashId
-      div
-        img(src="{{splashSmall}}" width="100px")
-    +else
-      div
-        img(class="preview" src="/images/no-video.jpg" width="100px")
-    div(class='title') {{> editableText collection="videos" field="title"}}
-    div(class='filename') {{fileName}}
+  a(href="{{pathFor '/utgave/:issue/kurs/:video' issue=issueId video=_id}}")
+    div(class="video-select" id="{{_id}}")
+      +if splashId
+        div
+          img(src="{{splashSmall}}" width="100px")
+      +else
+        div
+          img(class="preview" src="/images/no-video.jpg" width="100px")
+      div(class='title') {{> editableText collection="videos" field="title"}}
+      div(class='filename') {{fileName}}
+    
   div(class="itemActions")
      button(class="remove-video") X
+
+
+
+
 
 // CHAPTERS
 template(name="chapters")
@@ -83,6 +101,9 @@ template(name="chapter")
       button(class="adjust-time") Time
       button(class="adjust-image") Img
 
+
+
+//VIDEO MISSING
 template(name="videoNotFound")
   if Template.subscriptionsReady
     

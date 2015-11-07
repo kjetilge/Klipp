@@ -1,6 +1,6 @@
 //WebSocket connection to 'ws://localhost:3000/sockjs/740/t4rbwr7c/websocket' failed: WebSocket is closed before the connection is established.
 
-FlowRouter.route('/videoplayer/:issueId/:videoId', {
+FlowRouter.route('/utgave/:issueId/kurs/:videoId', {
     action: function(params, queryParams) {
       console.log("Query Params:", queryParams);
       var video = $("#video")[0];

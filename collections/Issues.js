@@ -21,5 +21,8 @@ Issues.after.remove(function (userId, doc) {
 Issues.helpers({
   videos: function () {
     return Videos.find({issueId: this._id})
+  },
+  firstVideo: function () {
+    return Videos.findOne();
   }
 })
