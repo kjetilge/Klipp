@@ -27,8 +27,13 @@ template(name="html5Player")
 template(name="issueNav")
   div(id="issue-nav")
     div(id="issue-actions")
-      button(class="add-issue") Legg til utgave  
-      //List of videos
+      if showOnlyCurrentIssue
+        button(class="toggle-issue-browser") Vis Tidligere utgaver
+      else
+        button(class="toggle-issue-browser") Vis kun siste utgave
+      
+      button(class="add-issue") Legg til utgave
+      
       +each issueItems
         +issueItem
 
@@ -41,9 +46,12 @@ template(name="issueItem")
       +else
         div
           img(class="preview" src="/images/no-video.jpg" width="100px")
-      div(class='title') {{> editableText collection="issues" field="title"}}
-    div(class="itemActions")
-       button(class="remove-issue") X
+  div(class='title') {{> editableText collection="issues" field="title"}}
+  div(class="itemActions")
+    button(class="remove-issue") X
+    | publisert:
+    input(type="checkbox" name="publisert" value="{{published}}")
+
 
 
 

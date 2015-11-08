@@ -7,8 +7,9 @@ Template.home.helpers({
 Template.home.events({
   'click button.first-issue': function () {
     console.log("First issue")
-    var issueId = Issues.insert({title: "første utgave", subtitle: "mye moro"})
-    var videoId = Videos.insert({title: "firste video", issueId: issueId});
+    var date = new Date();
+    var issueId = Issues.insert({title: "første utgave", subtitle: "mye moro", published: false, createdAt: date})
+    var videoId = Videos.insert({title: "firste video", issueId: issueId, published: false, createdAt: date});
     var params = {issueId: issueId, videoId: videoId}
     var path = FlowRouter.path("blogPostRoute", params);
     FlowRouter.go("videoplayer", params)

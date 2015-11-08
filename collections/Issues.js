@@ -9,7 +9,7 @@ if(Meteor.isServer) {
   })
   Meteor.methods({
     removeVideos: (issueId) => {
-      Videos.remove({issueId: issueId},{multi: true});
+      //Videos.remove({issueId: issueId}, {multi: true});
     }
   })
 }

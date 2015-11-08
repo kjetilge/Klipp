@@ -28,3 +28,8 @@ html, body{
 #video-actions {
   padding:20px;
 }
+
+.itemActions {
+  padding: 10px;
+  backgroud-color: gray;
+}

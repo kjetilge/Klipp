@@ -1,6 +1,6 @@
 /******************* HTML5 PLAYER *******************/
 Session.setDefault("uploadFile", false)
-
+Session.setDefault("showOnlyCurrentIssue", true);
 Template.html5Player.created = function () {
   var self = this;
   self.autorun(function() {
@@ -25,7 +25,11 @@ Template.html5Player.helpers({
       }
     }
     else {
-      FlowRouter.go('/video-ikke-funnet');
+      if(Issues.find().count() > 0)
+        FlowRouter.go('/video-ikke-funnet');
+      else {
+        FlowRouter.go('/');
+      }
     }
   },
   videoUrl: function () { //Slingshot
@@ -106,37 +110,77 @@ Template.html5Player.onRendered(function () {
 
 Template.issueNav.helpers({
 	issueItems: function () {
-		return Issues.find({});
-	}
+    if(Session.get("showOnlyCurrentIssue"))
+      return Issues.find({}, {sort: {createdAt: -1}, limit: 1});
+    else
+      return Issues.find({}, {sort: {createdAt: -1}});
+	},
+  showOnlyCurrentIssue: function () {
+    return Session.get("showOnlyCurrentIssue");
+  },
 })
 
 Template.issueNav.events({
   'click button.add-issue': function () {
-    var no = Issues.find().count()
-    var issueId = Issues.insert({title: "Klipp "+no+61, subtitle: "mye moro"});
-    var videoId = Videos.insert({title: "video til no:"+no+61, issueId: issueId});
+    //Session.setDefault("showOnlyCurrentIssue", true);
+    var issueNum = Issues.find().count();
+    issueNum  = issueNum +61;
+    var videoNum = Videos.find().count() + 1;
+    var date = new Date();
+    var issueId = Issues.insert({title: "Klipp "+issueNum, subtitle: "mye moro", published: false, createdAt: date});
+    var videoId = Videos.insert({title: "video nr: "+videoNum, issueId: issueId, published: false, createdAt: date});
+
     var params = {issueId: issueId, videoId: videoId}
-    var path = FlowRouter.path("blogPostRoute", params);
     FlowRouter.go("videoplayer", params)
-  }
+  },
+
+  'click button.toggle-issue-browser': function () {
+    var showOnlyCurrentIssue = Session.get("showOnlyCurrentIssue");
+    Session.set("showOnlyCurrentIssue", !showOnlyCurrentIssue);
+  },
+
 })
+
 Template.issueItem.events({
   'click .issueItem': function () {
     Session.set("uploadFile", null);
-    FlowRouter.setParams({videoId: this._id});
+    //FlowRouter.setParams({videoId: this._id});
   },
   'click button.remove-issue':function () {
-    console.log("remove issue", this._id)
-    Issues.remove(this._id);
-    var issue = Issues.findOne();
-    if(issue) {
-      var videoId = issue.videos().fetch()[0];
-      var params = {videoId: videoId, issueId: issue._id}
-      Router.go("videoplayer", params);
-    } else {
+    console.log("removing issue", this._id)
+    var deletedIssueId = this._id;
+    var currentIssueId = FlowRouter.getParam("issueId");
+    console.log("deletedIssueId === currentIssue._id", deletedIssueId, currentIssueId)
+
+    //show another issue before delete
+    if(deletedIssueId === currentIssueId) {
+      var issueToShow = Issues.findOne({ _id: { $ne: deletedIssueId } })
+      console.log("issueToShow", issueToShow._id)
+
+      videoToShow = issueToShow.videos().fetch()[0];
+      var params = {issueId: issueToShow._id, videoId: videoToShow._id}
+      var path = FlowRouter.path("videoplayer", params);
+      console.log(path);
+      FlowRouter.go("videoplayer", params);
 
     }
+
+    Issues.remove(deletedIssueId);
+
+
+  },
+  'change input': function(event) {
+    var x = event.target.checked;
+    Issues.update(this._id, {$set: {published: x}})
+    console.log("x",x);
   }
+})
+
+Template.issueItem.helpers({
+  published: function () {
+    console.log("this.published",this.published);
+    return this.published;
+  },
 })
 
 Template.issueNav.onCreated(function () {
@@ -187,29 +231,24 @@ Template.videoNavItem.events({
     console.log("count", count)
     if(count > 1) {
       var deletedVideoId = this._id;
-      Videos.remove(deletedVideoId, (err, res) => {
-        if(res) {
-          var currentVideoId = FlowRouter.getParam("videoId");
-          //If the current video is deleted show the first video in this group
-          if(currentVideoId === deletedVideoId) {
-            //Go to one of the remaining videos in the issue
-            var vid = Videos.findOne({issueId: issueId});
-            var params = {issueId: issueId, videoId: vid._id}
-            console.log("params", params)
-            if(vid && vid._id) {
-              console.log("params", params)
-              FlowRouter.go("videoplayer", params);
-            }
-            else {
-              throw new Meteor.Error("kunne ikke slette video", err);
-            }
-          }
-        }
-      })
+      var currentVideo = FlowRouter.getParam("videoId");
+      var videoToShow = Videos.findOne({issueId: issueId}, {$not: {videoId: deletedVideoId}})
+      var params = {issueId: issueId, videoId: videoToShow._id}
+
+      if(deletedVideoId === currentVideo) { //Vis en annen video rett før sletting
+        console.log("params", params)
+        var path = FlowRouter.path("videoplayer", params);
+        console.log(path); // prints "/blog/meteor/abc?show=yes&color=black"
+        FlowRouter.go("videoplayer", params);
+      }
+      else {
+        console.log("deletedVideoId !== currentVideo",deletedVideoId, currentVideo)
+        //throw new Meteor.Error("kunne ikke vise annen video etter sletting");
+      }
+      Videos.remove(deletedVideoId)
     } else {
       alert("En utgave må ha minst én video");
     }
-
   }
 })
 

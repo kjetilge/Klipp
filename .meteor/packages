@@ -23,7 +23,7 @@ kadira:flow-router
 kadira:blaze-layout
 cfs:ejson-file
 babrahams:editable-text
-meteortoys:allthings
 dburles:collection-helpers
 matb33:collection-hooks
 arillo:flow-router-helpers
+meteortoys:allthings@2.2.0
