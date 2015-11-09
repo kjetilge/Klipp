@@ -21,7 +21,8 @@ Template.html5Player.helpers({
       } else {
         console.log("vid FILENAME")
         var splashImage = SplashImages.findOne(vid.splashId);
-        return splashImage.url({store: 'splashImage'})
+        if(splashImage && splashImage.url)
+          return splashImage.url({store: 'splashImage'})
       }
     }
     else {
@@ -274,7 +275,10 @@ Template.videoNavItem.helpers({
     //console.log("VIDEO",vid)
     var splash = SplashImages.findOne(vid.splashId);
     //console.log("splash",splash)
-    return splash.url({store: "splashSmall"});
+    if(splash && splash.url) {
+      return splash.url({store: "splashSmall"});
+    }
+
   },
 })
 

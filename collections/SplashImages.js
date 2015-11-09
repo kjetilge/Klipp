@@ -55,6 +55,21 @@ if(Meteor.isServer){
         return SplashImages.find();
     });
 } else {
-    Meteor.subscribe('splashImage');
+    //Meteor.subscribe('splashImage');
     Meteor.subscribe('splashImages');
 }
+
+SplashImages.allow({
+    insert: function(userId, file) {
+        return true;
+    },
+    update: function(userId, file, fields, modifier) {
+        return true;
+    },
+    remove: function(userId, file) {
+        return true;
+    },
+    download: function() {
+        return true;
+    }
+});

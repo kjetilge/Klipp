@@ -12,6 +12,14 @@ Template.toolbar.events({
 
   },
   'click button.splash-shot': function (e, t) {
+    var videoId = FlowRouter.getParam('videoId');
+    var vid = Videos.findOne(videoId);
+    //remove existing splash
+    var splash = SplashImages.findOne(vid.splashId);
+    if(splash && splash._id){
+      SplashImages.remove(splash._id);
+    }
+
     //Get the video time
     var video = $("#video")[0];
     var x = video.videoWidth;
@@ -21,9 +29,6 @@ Template.toolbar.events({
     var splashHeight =  truncate((splashWidth / aspect), 0)
 
     var time = video.currentTime
-
-    var videoId = FlowRouter.getParam('videoId');
-    var vid = Videos.findOne(videoId);
 
     //capture a still and show it in navItem
     Session.set('splashTime', time)
