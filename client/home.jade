@@ -1,5 +1,7 @@
 template(name="home")
+  +atForm
   if currentIssue
+    +atForm
     div(class="front-logo")
       | logo her
     h1 BILLYS BUMBLE AND BUMBLE
@@ -7,4 +9,4 @@ template(name="home")
     
   else
     p Det finnes ingen utgivelser.
-    button(class="first-issue") Lag første utgave
+    button(class="first-issue waves-effect waves-light btn") Lag første utgave

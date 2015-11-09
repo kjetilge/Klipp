@@ -197,6 +197,18 @@ Template.issueItem.helpers({
     console.log("this.published",this.published);
     return this.published;
   },
+  frontSplashSmall: function () {
+    issueId = FlowRouter.getParam("issueId");
+    issue = Issues.findOne(issueId);
+    var splash = SplashImages.findOne(issue.splashId);
+    if(splash && splash.url) {
+      let splashUrl = splash.url({store: "splashSmall"});
+      console.log("frontSplash",splashUrl)
+      return splashUrl;
+    } else {
+      return "/images/no-video.jpg";
+    }
+  },
 })
 
 Template.issueNav.onCreated(function () {
@@ -278,7 +290,6 @@ Template.videoNavItem.helpers({
     if(splash && splash.url) {
       return splash.url({store: "splashSmall"});
     }
-
   },
 })
 

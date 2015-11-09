@@ -38,19 +38,17 @@ template(name="issueNav")
         +issueItem
 
 template(name="issueItem")
-  a(href="{{pathFor '/utgave/:issue/kurs/:video' issue=_id video=firstVideo._id}}")
-    div(class="issue-select" id="{{_id}}")
-      +if frontSplashId
-        div
-          img(src="{{frontSplashSmall}}" width="100px")
-      +else
-        div
-          img(class="preview" src="/images/no-video.jpg" width="100px")
-  div(class='title') {{> editableText collection="issues" field="title"}}
-  div(class="itemActions")
-    button(class="remove-issue") X
-    | publisert:
-    input(type="checkbox" name="publisert" value="{{published}}")
+  div(class="card")
+    a(href="{{pathFor '/utgave/:issue/kurs/:video' issue=_id video=firstVideo._id}}")
+      div(class="issue-select card-image" id="{{_id}}")
+        img(src="{{frontSplashSmall}}" class="frontSplashSmall")
+        span(class="card-title") Card Title
+      div(class="card-content")
+        div(class='title card-title') {{> editableText collection="issues" field="title"}}
+        div(class="itemActions")
+          button(class="remove-issue") X
+          | publisert:
+          input(type="checkbox" name="publisert" value="{{published}}")
 
 
 
@@ -71,11 +69,9 @@ template(name="videoNavItem")
   a(href="{{pathFor '/utgave/:issue/kurs/:video' issue=issueId video=_id}}")
     div(class="video-select" id="{{_id}}")
       +if splashId
-        div
-          img(src="{{splashSmall}}" width="100px")
+        img(src="{{splashSmall}}" width="100px")
       +else
-        div
-          img(class="preview" src="/images/no-video.jpg" width="100px")
+        img(class="preview" src="/images/no-video.jpg" width="100px")
       div(class='title') {{> editableText collection="videos" field="title"}}
       div(class='filename') {{fileName}}
     

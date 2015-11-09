@@ -22,13 +22,13 @@ if(Meteor.isServer) {
     console.warn("AWS settings missing")
   }
   s3 = new AWS.S3()
-
+/*
   list = s3.listObjectsSync({
     Bucket: 'paretofilm-uploads'
     //Prefix: 'subdirectory/'
   })
   console.log(list)
-
+*/
 
 
   Meteor.publish("videos", function () {

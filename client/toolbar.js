@@ -20,7 +20,7 @@ Template.toolbar.events({
       SplashImages.remove(splash._id);
     }
 
-    //Get the video time
+    //Get the video dimentions
     var video = $("#video")[0];
     var x = video.videoWidth;
     var y = video.videoHeight;
@@ -43,6 +43,48 @@ Template.toolbar.events({
           console.log("splashId", res)
           //todo: sjekk om video har splash fra før og slett den gamle.
           Videos.update(videoId, {$set: {splashId: res._id}});
+        } else {
+          console.log(err);
+        }
+      })
+    }
+  },
+  'click button.issue-shot': function (e, t) {
+    var videoId = FlowRouter.getParam('videoId');
+    var issueId = FlowRouter.getParam('issueId');
+
+    var vid = Videos.findOne(videoId);
+    var issue = Issues.findOne(issueId);
+    //remove existing splash
+    var splash = SplashImages.findOne(issue.splashId);
+    if(splash && splash._id){
+      SplashImages.remove(splash._id);
+    }
+
+    //Get the video dimentions
+    var video = $("#video")[0];
+    var x = video.videoWidth;
+    var y = video.videoHeight;
+    var aspect = x/y;
+    var splashWidth = 1920;
+    var splashHeight =  truncate((splashWidth / aspect), 0)
+
+    var time = video.currentTime
+
+    //capture a still and show it in navItem
+    Session.set('splashTime', time)
+    previewIssueSplash(issueId);
+    //Issues.insert({videoId: vid._id}) //Insert empty Issue to refer to after video is uploaded
+    Videos.update(videoId,{$set: {issueSplashTime: time}})
+    //If video is uploaded make a still from original serverside
+    if(vid && vid.downloadUrl) {
+      var vidUrl = vid.downloadUrl;
+      console.log("vidUrl", vidUrl)
+      Meteor.call('makeSplash', vidUrl, time, splashWidth, splashHeight, function (err,res) {
+        if(res) {
+          console.log("splashId", res)
+          //todo: sjekk om video har splash fra før og slett den gamle.
+          Issues.update(issueId, {$set: {splashId: res._id}});
         } else {
           console.log(err);
         }
@@ -121,9 +163,21 @@ Template.uploader.events({
               Session.set("splashTime", null);
             } //vidUrl, time, splashWidth, splashHeight
             splashId = Meteor.call('makeSplash', downloadUrl, time, SplashWidth, SplashHeight, (err, res) => {
-            Videos.update(VID, {$set: {downloadUrl: downloadUrl, splashId: res._id}})
-            Session.set('videoLoaded', false);
-          });
+              Videos.update(VID, {$set: {downloadUrl: downloadUrl, splashId: res._id}})
+              Session.set('videoLoaded', false);
+            });
+
+
+            //************************** ISSUE SPLASH ****************************
+            //Capture issueSplash if preview exists
+            let video = Videos.findOne(VID)
+            let issue = Issues.findOne(video.issueId);
+            if(video.issueSplashTime) {
+              Meteor.call('makeSplash', downloadUrl, video.issueSplashTime, SplashWidth, SplashHeight, (err, res) => {
+                Issues.update(issue._id, {$set: {splashId: res._id}})
+              });
+            }
+
         }
       });
     }
@@ -173,7 +227,21 @@ function previewSplash(videoId) {
   var img = $(".video-select#"+videoId+" img")[0];
   console.log(img);
   img.src = canvas.toDataURL();
+}
 
+function previewIssueSplash(issueId) {
+  var video = $("video").get(0);
+  var time = video.currentTime;
+  var canvas = document.createElement("canvas");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d')
+        .drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  //var img = document.createElement("img");
+  var img = $(".issue-select#"+issueId+" img")[0];
+  console.log(img);
+  img.src = canvas.toDataURL();
 }
 
 var truncate = function (numberToBeTruncated, numberOfDecimalsToKeep) {
