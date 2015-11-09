@@ -154,14 +154,29 @@ Template.issueItem.events({
 
     //show another issue before delete
     if(deletedIssueId === currentIssueId) {
-      var issueToShow = Issues.findOne({ _id: { $ne: deletedIssueId } })
-      console.log("issueToShow", issueToShow._id)
+      issueNum = Issues.find().count();
 
+      //If the last remaining issue is beeing deleted, remove itwithout rerouting;
+      if(issueNum === 1) {
+        Issues.remove(deletedIssueId);
+        return;
+      }
+
+      //Search for an issue that is not about to be deleted and display it if found
+
+      var issueToShow = Issues.findOne({ _id: { $ne: deletedIssueId } })
+      //If noe issues found show not found
+      if(!Boolean(issueToShow)) {
+        FlowRouter.go("/video-ikke-funnet"); // NO issues
+        return;
+      }
+
+      console.log("issueToShow", issueToShow._id)
       videoToShow = issueToShow.videos().fetch()[0];
       var params = {issueId: issueToShow._id, videoId: videoToShow._id}
       var path = FlowRouter.path("videoplayer", params);
       console.log(path);
-      FlowRouter.go("videoplayer", params);
+      FlowRouter.go(path);
 
     }
 
