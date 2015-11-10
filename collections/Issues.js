@@ -7,6 +7,10 @@ if(Meteor.isServer) {
   Meteor.publish("singleIssue", function (issueId) {
     return Issues.find({}, {limit: 1, $natural:-1}) //todo: ensure return of the latest edition
   })
+  Meteor.publish("currentIssue", function () {
+    return Issues.find({}, {sort: {createdAt: -1, limit: 1}} )
+  })
+
   Meteor.methods({
     removeVideos: (issueId) => {
       var res = Videos.remove({issueId: issueId}); // {multi: true}
@@ -24,6 +28,6 @@ Issues.helpers({
     return Videos.find({issueId: this._id})
   },
   firstVideo: function () {
-    return Videos.findOne({issueId: this._id});
+    return Videos.findOne({}, {limit: 1, $natural:-1})
   }
 })

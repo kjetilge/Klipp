@@ -1,9 +1,10 @@
 // ****************** MAIN PLAYER LAYOUT TEMPLATE ******************
-template(name="player")
+template(name="player")      
   div(class="left")
     +Template.dynamic(template=videoArea)
     +Template.dynamic(template=toolbarArea)
-    +Template.dynamic(template=chaptersArea)
+    //+Template.dynamic(template=chaptersArea)
+
   div(class="right")
     +Template.dynamic(template=issueNavArea)
     +Template.dynamic(template=videoNavArea)
@@ -14,14 +15,13 @@ template(name="player")
 
 // HTML5 PLAYER
 template(name="html5Player")
-  if Template.subscriptionsReady
-    video(id="video" type="video/mp4" src="{{videoUrl}}" poster="{{posterImageUrl}}" controls crossOrigin="Anonymous" width="600")
-  else Template.subscriptionsReady
-    h1 loading ..
-    
+  div
+    if Template.subscriptionsReady
+      video(id="video" type="video/mp4" src="{{videoUrl}}" poster="{{posterImageUrl}}" controls crossOrigin="Anonymous" width="600")
+    else Template.subscriptionsReady
+      h1 loading ..
     
 
-    
     
 // Issue (Utgave)
 template(name="issueNav")
@@ -34,21 +34,22 @@ template(name="issueNav")
       
       button(class="add-issue") Legg til utgave
       
-      +each issueItems
-        +issueItem
+    +each issueItems
+      +issueItem
 
 template(name="issueItem")
   div(class="card")
     a(href="{{pathFor '/utgave/:issue/kurs/:video' issue=_id video=firstVideo._id}}")
       div(class="issue-select card-image" id="{{_id}}")
         img(src="{{frontSplashSmall}}" class="frontSplashSmall")
-        span(class="card-title") Card Title
-      div(class="card-content")
-        div(class='title card-title') {{> editableText collection="issues" field="title"}}
-        div(class="itemActions")
-          button(class="remove-issue") X
-          | publisert:
-          input(type="checkbox" name="publisert" value="{{published}}")
+        span(class="card-title") {{title}}
+    div(class="card-content")
+      //div(class="itemActions")
+      div(class='title')
+        |{{> editableText collection="issues" field="title"}}
+      button(class="remove-issue") X
+      | publisert:
+      input(type="checkbox" name="publisert" value="{{published}}")
 
 
 
@@ -58,6 +59,8 @@ template(name="issueItem")
 // VIDEO NAV
 template(name="videoNav")
   div(id="video-nav")
+    div(id="video-nav-header")
+      h3 Innhold
     //Button to add videos
     div(id="video-actions")
       button(class="add-video") Legg til video  

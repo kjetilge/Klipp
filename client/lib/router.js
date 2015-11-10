@@ -10,8 +10,6 @@ FlowRouter.route('/utgave/:issueId/kurs/:videoId', {
         if(time)
           video.currentTime = parseFloat(time);
       }
-
-
       BlazeLayout.render('player', {
         videoArea: "html5Player",
         toolbarArea: "toolbar",
@@ -30,16 +28,21 @@ FlowRouter.route('/video-ikke-funnet', {
 
 FlowRouter.route('/', {
     action: function() {
-      BlazeLayout.render('home');
-    }
+      BlazeLayout.render('masterLayout', {
+        footer: "footer",
+        main: "home",
+        nav: "nav",
+      });
+    },
+    name: "home"
   });
 
 FlowRouter.notFound = {
-    // Subscriptions registered here don't have Fast Render support.
-    subscriptions: function() {
-
-    },
-    action: function() {
-      BlazeLayout.render('not-found');
-    }
+  action: function() {
+    BlazeLayout.render('masterLayout', {
+      footer: "footer",
+      main: "pageNotFound",
+      nav: "nav",
+    });
+  }
 };

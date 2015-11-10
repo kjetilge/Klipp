@@ -4,16 +4,24 @@
 # but you can also edit it by hand.
 
 standard-app-packages
-neonaleon:gss
+#neonaleon:gss
+fourseven:scss
+poetic:materialize-scss
+
 cfs:standard-packages
 cfs:gridfs
 cfs:filesystem
 cfs:graphicsmagick
+cfs:ejson-file
+ecmascript
+dburles:collection-helpers
+matb33:collection-hooks
+peerlibrary:aws-sdk
+
 meteorhacks:npm
 npm-container
 izzilab:shelljs
 standard-minifiers
-ecmascript
 insecure
 edgee:slingshot
 reactive-var
@@ -21,15 +29,10 @@ reactive-var
 mquandalle:jade
 kadira:flow-router
 kadira:blaze-layout
-cfs:ejson-file
 babrahams:editable-text
-dburles:collection-helpers
-matb33:collection-hooks
+
 arillo:flow-router-helpers
 meteortoys:allthings@2.2.0
-peerlibrary:aws-sdk
-fourseven:scss
-poetic:materialize-scss
 accounts-password
 useraccounts:materialize
 softwarerero:accounts-t9n

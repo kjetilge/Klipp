@@ -1,8 +1,10 @@
 Session.setDefault('videoLoaded', false)
+Session.setDefault('isUploading', false)
+
 var uploader = new ReactiveVar();
 
 Template.toolbar.events({
-  'click button.snapshot': function (e, t) {
+  'click a.snapshot': function (e, t) {
     console.log("snap");
     video = $('#video')[0];
     var videoId = Session.get("videoId")
@@ -11,7 +13,7 @@ Template.toolbar.events({
     captureStill(videoId, video.currentTime);
 
   },
-  'click button.splash-shot': function (e, t) {
+  'click a.splash-shot': function (e, t) {
     var videoId = FlowRouter.getParam('videoId');
     var vid = Videos.findOne(videoId);
     //remove existing splash
@@ -49,7 +51,7 @@ Template.toolbar.events({
       })
     }
   },
-  'click button.issue-shot': function (e, t) {
+  'click a.issue-shot': function (e, t) {
     var videoId = FlowRouter.getParam('videoId');
     var issueId = FlowRouter.getParam('issueId');
 
@@ -92,6 +94,7 @@ Template.toolbar.events({
     }
   },
   'change #slingshot_upload': function () {
+    console.log("slingshot_upload set")
     Session.set('videoLoaded', true);
   }
 })
@@ -132,7 +135,7 @@ Template.progressBar.helpers({
 });
 var upload;
 Template.uploader.events({
-  'click button.upload': function (e, template) {
+  'click a.upload': function (e, template) {
     /* DIMENSIONS */
     var video = $("#video")[0];
     var AutoSplashTime = video.duration / 2;
@@ -183,7 +186,7 @@ Template.uploader.events({
     }
     uploader.set(upload);
   },
-  'click button.cancel': function () {
+  'click a.cancel': function () {
     upload.xhr.abort();
     Session.set("uploadFile", null);
     Session.set("isUploading", false)

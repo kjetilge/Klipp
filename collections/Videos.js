@@ -35,7 +35,12 @@ if(Meteor.isServer) {
     return Videos.find({})
   });
   Meteor.publish("singleVideo", function (videoId) {
-    return Videos.find({_id: videoId})
+    issue = Issues.findOne({}, {limit: 1, $natural:-1});
+    if(issue && issue._id) {
+      return Videos.find({_id: issue.firstVideo()._id})
+    } else {
+      return Videos.find();
+    }
   })
   Meteor.methods({
     removeMedia: (video) => {

@@ -1,0 +1,42 @@
+template(name="masterLayout")
+  +Template.dynamic(template=nav)
+    //+Template.dynamic(template=main)
+    
+  //Template.dynamic(template=footer)
+  
+
+template(name="nav")
+  nav
+    div(class="nav-wrapper")
+      a(href="#!" class="brand-logo") Klipp
+      a(href="#" data-activates="mobile-nav" class="button-collapse")
+        i(class="material-icons") menu
+      ul(class="right hide-on-med-and-down")
+        li
+          a(href="{{pathFor 'home'}}") Home
+        li
+          a(href="{{pathFor 'videoplayer'}}") Video
+        li
+          +atNavButton
+      ul(class="side-nav" id="mobile-nav")
+        li
+          a(href="{{pathFor 'home'}}") Home
+        li
+          a(href="{{pathFor 'videoplayer'}}") Video
+        li
+          +atNavButton          
+
+                
+template(name="footer")
+  div(class="bottom-nav")
+    nav
+        ul(id="nav-mobile" class="right")
+          li(a href="{{pathFor 'home'}}") Home
+            
+            
+template(name="pageNotFound")            
+  div(class="not-found")
+    div(class="container")
+      div(class="center")
+        h3 404 - Au da!
+        h5 Siden du så etter ble ikke funnet.

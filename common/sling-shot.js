@@ -27,8 +27,6 @@ if (Meteor.isServer) {
 
 
 
-
-
 if (Meteor.isClient) {
   /*
   Template.uploader.events({

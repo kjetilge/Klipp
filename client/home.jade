@@ -1,12 +1,16 @@
 template(name="home")
-  +atForm
-  if currentIssue
-    +atForm
-    div(class="front-logo")
-      | logo her
-    h1 BILLYS BUMBLE AND BUMBLE
-    h4 STYLING THE BUMBLE WAY
-    
-  else
-    p Det finnes ingen utgivelser.
-    button(class="first-issue waves-effect waves-light btn") Lag første utgave
+  //+atForm
+  p ready ?
+  if Template.subscriptionsReady
+    p ready
+    if currentIssue
+      img(src="")
+      div(class="front-logo")
+        | logo her
+      h1 {{title}}
+      h4 {{subtitle}}
+      a(href="{{currentIssuePath}}") Nyeste utgave
+    else
+      p Det finnes ingen utgivelser.
+      button(class="first-issue waves-effect waves-light btn") Lag første utgave
+      a(href="{{currentIssuePath}}") Nyeste utgave

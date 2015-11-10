@@ -198,9 +198,10 @@ Template.issueItem.helpers({
     return this.published;
   },
   frontSplashSmall: function () {
-    issueId = FlowRouter.getParam("issueId");
+    console.log("This issue", this.splashId)
+    issueId = this._id;
     issue = Issues.findOne(issueId);
-    var splash = SplashImages.findOne(issue.splashId);
+    var splash = SplashImages.findOne(this.splashId);
     if(splash && splash.url) {
       let splashUrl = splash.url({store: "splashSmall"});
       console.log("frontSplash",splashUrl)
