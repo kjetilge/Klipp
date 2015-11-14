@@ -1,5 +1,4 @@
 Videos = new Mongo.Collection("videos")
-
 Videos.helpers({
   chapters: function () {
     return Chapters.find({videoId: this._id})
@@ -11,7 +10,6 @@ Videos.after.remove(function (userId, doc) {
   Meteor.call("removeMedia", doc)
 });
 
-
 if(Meteor.isServer) {
   if(Meteor.settings.AWS) {
     AWS.config.update({
@@ -22,14 +20,6 @@ if(Meteor.isServer) {
     console.warn("AWS settings missing")
   }
   s3 = new AWS.S3()
-/*
-  list = s3.listObjectsSync({
-    Bucket: 'paretofilm-uploads'
-    //Prefix: 'subdirectory/'
-  })
-  console.log(list)
-*/
-
 
   Meteor.publish("videos", function () {
     return Videos.find({})
@@ -50,6 +40,8 @@ if(Meteor.isServer) {
       removeVideo(video);
     }
   })
+
+
   Meteor.startup(function () {
     /*
     if( Videos.find().count() === 0) {

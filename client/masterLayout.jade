@@ -1,8 +1,7 @@
 template(name="masterLayout")
   +Template.dynamic(template=nav)
-    //+Template.dynamic(template=main)
-    
-  //Template.dynamic(template=footer)
+  +Template.dynamic(template=main)
+  +Template.dynamic(template=footer)
   
 
 template(name="nav")
@@ -34,7 +33,7 @@ template(name="footer")
           li(a href="{{pathFor 'home'}}") Home
             
             
-template(name="pageNotFound")            
+template(name="pageNotFound")          
   div(class="not-found")
     div(class="container")
       div(class="center")

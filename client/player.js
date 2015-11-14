@@ -69,39 +69,13 @@ Template.html5Player.created = function () {
 }
 
 Template.html5Player.onRendered(function () {
+  //Url contains time jump to time in video
   var time = FlowRouter.getQueryParam('time');
   if(time) {
     goToTime(time);
   }
-
-  input = document.getElementById('slingshot_upload');
-  /************* LOAD VIDEO INTO FORM *************/
-  input.addEventListener('change', function (evt) {
-      var reader = new window.FileReader(),
-          file = evt.target.files[0],
-          url;
-
-          reader = window.URL || window.webKitURL;
-
-      if (reader && reader.createObjectURL) {
-          url = reader.createObjectURL(file);
-          Session.set("uploadFile", url); /********** LOAD VIDEO *********/
-          $("#video")[0].poster="";
-          //reader.revokeObjectURL(url);  //free up memory ???
-          return;
-      }
-
-      if (!window.FileReader) {
-          console.log('Sorry, not so much');
-          return;
-      }
-
-      reader = new window.FileReader();
-      reader.onload = function(evt) {
-         $("#video")[0].src = evt.target.result;
-      };
-      reader.readAsDataURL(file);
-  }, false);
+  //When user selects a video to upload, show it in the player
+  loadUploadVideo();
 })
 
 
@@ -142,51 +116,72 @@ Template.issueNav.events({
 
 })
 
+
 Template.issueItem.events({
   'click .issueItem': function () {
-    Session.set("uploadFile", null);
-    //FlowRouter.setParams({videoId: this._id});
+    //Session.set("uploadFile", null);
   },
-  'click button.remove-issue':function () {
-    console.log("removing issue", this._id)
-    var deletedIssueId = this._id;
-    var currentIssueId = FlowRouter.getParam("issueId");
-    console.log("deletedIssueId === currentIssue._id", deletedIssueId, currentIssueId)
+  'click a.remove-issue':function (e,t) {
+    var self = this;
+    e.preventDefault();
+    MaterializeModal.confirm({
+      title: "Slett utgave",
+      label: "Sletting av utgave!",
+      message: "Er du sikker på at du vil slette "+this.title+" ?",
+      closeLabel: '<i class="material-icons left red-text">exit_to_app</i> Avbryt',
+      submitLabel: '<i class="material-icons left green-text">done</i> Slett',
+      callback: function(error, response) {
+        if (response.submit) {
 
-    //show another issue before delete
-    if(deletedIssueId === currentIssueId) {
-      issueNum = Issues.find().count();
+          console.log("removing issue", self ._id)
+          var deletedIssueId = self ._id;
+          var currentIssueId = FlowRouter.getParam("issueId");
+          console.log("deletedIssueId === currentIssue._id", deletedIssueId, currentIssueId)
 
-      //If the last remaining issue is beeing deleted, remove itwithout rerouting;
-      if(issueNum === 1) {
-        Issues.remove(deletedIssueId);
-        return;
+          //show another issue before delete
+          if(deletedIssueId === currentIssueId) {
+            issueNum = Issues.find().count();
+
+            //If the last remaining issue is beeing deleted, remove itwithout rerouting;
+            if(issueNum === 1) {
+              Issues.remove(deletedIssueId);
+              return;
+            }
+
+            //Search for an issue that is not about to be deleted and display it if found
+
+            var issueToShow = Issues.findOne({ _id: { $ne: deletedIssueId } })
+            //If noe issues found show not found
+            if(!Boolean(issueToShow)) {
+              FlowRouter.go("/video-ikke-funnet"); // NO issues
+              return;
+            }
+
+            console.log("issueToShow", issueToShow._id)
+            videoToShow = issueToShow.videos().fetch()[0];
+            var params = {issueId: issueToShow._id, videoId: videoToShow._id}
+            var path = FlowRouter.path("videoplayer", params);
+            console.log(path);
+            FlowRouter.go(path);
+
+          }
+
+          Issues.remove(deletedIssueId);
+
+
+          Materialize.toast("Utgaven ble slettet", 5000, "green");
+        } else {
+          Materialize.toast("Ingen sletting ble utført", 5000, "red");
+        }
       }
-
-      //Search for an issue that is not about to be deleted and display it if found
-
-      var issueToShow = Issues.findOne({ _id: { $ne: deletedIssueId } })
-      //If noe issues found show not found
-      if(!Boolean(issueToShow)) {
-        FlowRouter.go("/video-ikke-funnet"); // NO issues
-        return;
-      }
-
-      console.log("issueToShow", issueToShow._id)
-      videoToShow = issueToShow.videos().fetch()[0];
-      var params = {issueId: issueToShow._id, videoId: videoToShow._id}
-      var path = FlowRouter.path("videoplayer", params);
-      console.log(path);
-      FlowRouter.go(path);
-
-    }
-
-    Issues.remove(deletedIssueId);
-
+    });
 
   },
-  'change input': function(event) {
+  'change input': function(event, t) {
+    event.preventDefault();
     var x = event.target.checked;
+    var id = event.target.name;
+    console.log("issue id:", this._id)
     Issues.update(this._id, {$set: {published: x}})
     console.log("x",x);
   }
@@ -195,10 +190,10 @@ Template.issueItem.events({
 Template.issueItem.helpers({
   published: function () {
     console.log("this.published",this.published);
-    return this.published;
+    return (this.published) ? 'checked' : false;
   },
   frontSplashSmall: function () {
-    console.log("This issue", this.splashId)
+    console.log("this.splashId defined ?", this.splashId)
     issueId = this._id;
     issue = Issues.findOne(issueId);
     var splash = SplashImages.findOne(this.splashId);
@@ -228,6 +223,10 @@ Template.videoNav.helpers({
     var issueId = FlowRouter.getParam('issueId');
     console.log("issueId", issueId)
     return Videos.find({issueId: issueId});
+  },
+  videoNavHeight: function () {
+    var onlyCurrentIssue = Session.get("showOnlyCurrentIssue"); //init true
+    return (onlyCurrentIssue) ? "video-nav-tall" : "video-nav-short";
   }
 })
 Template.videoNav.created = function () {
@@ -250,10 +249,10 @@ Template.videoNav.events({ /********** CREATE VIDEO ***********/
 })
 Template.videoNavItem.events({
   'click .video-select': function () {
-    Session.set("uploadFile", null);
-    //FlowRouter.setParams({videoId: this._id});
+    console.log("uploadFile set to null - is this smart ?")
+    //Session.set("uploadFile", null);
   },
-  'click button.remove-video': function () {
+  'click a.remove-video': function () {
     Session.set("uploadFile", null);
     var issueId = FlowRouter.getParam("issueId");
     var count = Videos.find({issueId: issueId}).count();
@@ -401,5 +400,39 @@ function goToTime(time) {
      setTimeout(function(){
        goToTime(time)
      }, 50)
+  }
+}
+
+function loadUploadVideo() {
+  /************* LOAD VIDEO INTO FORM *************/
+  input = document.getElementById('slingshot_upload');
+  if(input && input.addEventListener) {
+    input.addEventListener('change', function (evt) {
+        console.log("loading video file..")
+        var reader = new window.FileReader(),
+            file = evt.target.files[0],
+            url;
+
+            reader = window.URL || window.webKitURL;
+
+        if (reader && reader.createObjectURL) {
+            url = reader.createObjectURL(file);
+            Session.set("uploadFile", url); /********** LOAD VIDEO *********/
+            $("#video")[0].poster="";
+            //reader.revokeObjectURL(url);  //free up memory ???
+            return;
+        }
+
+        if (!window.FileReader) {
+            console.log('Sorry, not so much');
+            return;
+        }
+
+        reader = new window.FileReader();
+        reader.onload = function(evt) {
+           $("#video")[0].src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+    }, false);
   }
 }

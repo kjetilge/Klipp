@@ -1,3 +1,4 @@
+
 var ffmpeg = Meteor.npmRequire('liquid-ffmpeg');
 var awsPath = ""
 var vPath = '/Users/kjetil/Documents/Development/DevKlipp/CollectionFS-Demo/public/video/v10.mp4'

@@ -128,14 +128,21 @@ Template.progressBar.helpers({
 
     progress: function () {
         var upload = uploader.get();
-        if (upload)
-            //return upload.progress() * 100;//Math.round(upload.progress() * 100) || 0 ;
-          return truncate(upload.progress() * 100, 1) || 0
+        if (upload) {
+          var progress = truncate(upload.progress() * 100, 1) || 0
+          console.log("progressing", progress)
+          //return upload.progress() * 100;//Math.round(upload.progress() * 100) || 0 ;
+          return progress;
+        } else {
+          return 0;
+        }
+
     }
 });
 var upload;
 Template.uploader.events({
   'click a.upload': function (e, template) {
+    e.preventDefault();
     /* DIMENSIONS */
     var video = $("#video")[0];
     var AutoSplashTime = video.duration / 2;
@@ -158,16 +165,18 @@ Template.uploader.events({
           console.error('Error uploading'); //, uploader.xhr.response);
           alert (error);
         } else {
-            Session.set("uploadFile", null);
+            //Session.set("uploadFile", null);
             var splashTime = Session.get("splashTime");
             var time = AutoSplashTime;
             if(splashTime) {
               time = splashTime;
               Session.set("splashTime", null);
             } //vidUrl, time, splashWidth, splashHeight
+            //************************** Video SPLASH ****************************
             splashId = Meteor.call('makeSplash', downloadUrl, time, SplashWidth, SplashHeight, (err, res) => {
               Videos.update(VID, {$set: {downloadUrl: downloadUrl, splashId: res._id}})
               Session.set('videoLoaded', false);
+              Session.set("uploadFile", null); //er dette lurt ?
             });
 
 
@@ -178,6 +187,7 @@ Template.uploader.events({
             if(video.issueSplashTime) {
               Meteor.call('makeSplash', downloadUrl, video.issueSplashTime, SplashWidth, SplashHeight, (err, res) => {
                 Issues.update(issue._id, {$set: {splashId: res._id}})
+                Session.set("uploadFile", null); //er dette lurt ?
               });
             }
 
@@ -194,8 +204,21 @@ Template.uploader.events({
     videoId = FlowRouter.getParam('videoId');
     FlowRouter.go("/videoplayer?videoId="+videoId);
     //todo reload the previous video
+  },
+  'click .filebutton': function (e,t) {
+    e.preventDefault();
+    console.log("open dialog..")
+    $('#slingshot_upload').click();
+  },
+  'change .upload': function (e, t) {
+    var filename = e.target.value.split("\\").pop(-1)
+    console.log("filename", filename)
+    $("a.filenameviewer").text(filename);
   }
 });
+
+
+
 function captureStill() {
   var video = $("video").get(0);
   var time = video.currentTime;

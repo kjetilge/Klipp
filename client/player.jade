@@ -1,13 +1,15 @@
 // ****************** MAIN PLAYER LAYOUT TEMPLATE ******************
-template(name="player")      
-  div(class="left")
-    +Template.dynamic(template=videoArea)
-    +Template.dynamic(template=toolbarArea)
-    //+Template.dynamic(template=chaptersArea)
+template(name="player")
+  div(id="player" class="grey darken-1" style="margin:0;padding:0")
+    div(id="left-pane")
+      +Template.dynamic(template=videoArea)
+      if isAdmin
+        +Template.dynamic(template=toolbarArea)
+      //+Template.dynamic(template=chaptersArea)
 
-  div(class="right")
-    +Template.dynamic(template=issueNavArea)
-    +Template.dynamic(template=videoNavArea)
+    div(id="right-pane" class="grey lighten-1")
+      +Template.dynamic(template=issueNavArea)
+      +Template.dynamic(template=videoNavArea)
 
 
 
@@ -15,86 +17,99 @@ template(name="player")
 
 // HTML5 PLAYER
 template(name="html5Player")
-  div
+  div(id="html5Player")
     if Template.subscriptionsReady
-      video(id="video" type="video/mp4" src="{{videoUrl}}" poster="{{posterImageUrl}}" controls crossOrigin="Anonymous" width="600")
+      video(id="video" type="video/mp4" src="{{videoUrl}}" poster="{{posterImageUrl}}" controls crossOrigin="Anonymous" style="display:block")
     else Template.subscriptionsReady
       h1 loading ..
-    
-
     
 // Issue (Utgave)
 template(name="issueNav")
   div(id="issue-nav")
-    div(id="issue-actions")
+    div(id="issue-nav-top" class="grey darken-3")
       if showOnlyCurrentIssue
-        button(class="toggle-issue-browser") Vis Tidligere utgaver
+        button(class="toggle-issue-browser waves-effect waves-light btn") Tidligere utgaver
       else
-        button(class="toggle-issue-browser") Vis kun siste utgave
-      
-      button(class="add-issue") Legg til utgave
-      
-    +each issueItems
-      +issueItem
+        button(class="toggle-issue-browser waves-effect waves-light btn") Kun siste utgave
+      if isAdmin
+        button(class="btn-floating btn-small waves-effect waves-light add-issue")
+          i(class="material-icons") add
+    
+    if showOnlyCurrentIssue
+      h1 Issue
+    else
+      div(id="issue-nav-scroller" class="grey darken-4")   
+        ul
+          +each issueItems
+            li
+              +issueItem
 
 template(name="issueItem")
-  div(class="card")
+  div(class="issue-item card grey darken-4")
     a(href="{{pathFor '/utgave/:issue/kurs/:video' issue=_id video=firstVideo._id}}")
-      div(class="issue-select card-image" id="{{_id}}")
+      div(class="issue-select card-image")
         img(src="{{frontSplashSmall}}" class="frontSplashSmall")
         span(class="card-title") {{title}}
-    div(class="card-content")
-      //div(class="itemActions")
-      div(class='title')
-        |{{> editableText collection="issues" field="title"}}
-      button(class="remove-issue") X
-      | publisert:
-      input(type="checkbox" name="publisert" value="{{published}}")
-
-
-
-
-
+    if isAdmin
+      div(class="issue-item-actions")
+        div(class='edit-title center-align') {{> editableText collection="issues" field="title"}}
+        span       
+          input(type="checkbox" id="{{_id}}" checked="{{published}}")
+          label(for="{{_id}}") Publisert
+          a(class="btn-floating btn-small waves-effect waves-light red remove-issue")
+            i(class="material-icons") delete
+    
 
 // VIDEO NAV
 template(name="videoNav")
-  div(id="video-nav")
-    div(id="video-nav-header")
-      h3 Innhold
+  //Heigth determined by .video-nav-tall / .video-nav-short from {{videoNavHeight}}
+  div(id="video-nav" class="{{videoNavHeight}} grey darken-4")
     //Button to add videos
-    div(id="video-actions")
-      button(class="add-video") Legg til video  
+    div(id="video-nav-top" class="grey darken-3")
+      h2(class="video-nav-heading") Videoer
+      if isAdmin
+        button(class="btn-floating btn-small waves-effect waves-light green add-video")
+          i(class="material-icons") add
     //List of videos
-    +each videos
-      +videoNavItem
+    div(id="video-scroll")
+      ul(class="video-list")
+        +each videos
+          li
+            +videoNavItem
 
 template(name="videoNavItem")
-  a(href="{{pathFor '/utgave/:issue/kurs/:video' issue=issueId video=_id}}")
-    div(class="video-select" id="{{_id}}")
-      +if splashId
-        img(src="{{splashSmall}}" width="100px")
-      +else
-        img(class="preview" src="/images/no-video.jpg" width="100px")
-      div(class='title') {{> editableText collection="videos" field="title"}}
-      div(class='filename') {{fileName}}
-    
-  div(class="itemActions")
-     button(class="remove-video") X
-
-
+  div(class="video-nav-item")
+    a(href="{{pathFor '/utgave/:issue/kurs/:video' issue=issueId video=_id}}")
+      div(class="video-select" id="{{_id}}")
+        +if splashId
+          img(src="{{splashSmall}}" width="100%")
+        +else
+          img(class="preview" src="/images/no-video.jpg" width="100%")
+    div(class="video-nav-item-actions")
+      div(class='title')
+        if isAdmin
+          h2 {{> editableText collection="videos" field="title"}}
+        else
+          h2 {{title}}
+      if isAdmin
+        button(class="btn-floating btn-small waves-effect waves-light  green remove-video")
+          i(class="material-icons") delete
+    p Fil: {{fileName}}      
 
 
 
 // CHAPTERS
 template(name="chapters")
-  div(id="chapters")
+  div(id="chapters" class="grey darken-1")
+    | Chapters
     +each chapters
       +chapter
 
 template(name="chapter")
   span(class="chapter" style="display: inline-block")
-    div
-      button(class="delete") X
+    if isAdmin
+      div
+        button(class="delete") X
     +if url store="chapterImage"
       img(src="{{url store='chapterImage'}}")
     +else

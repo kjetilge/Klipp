@@ -11,14 +11,18 @@ Template.home.helpers({
   },
   currentIssuePath: function () {
     var issue = Issues.findOne({}, {sort: {createdAt: -1, limit: 1}} )
-    console.log(issue)
-    console.log("READY!")
-    var video = issue.firstVideo();
-    var params = {issueId: issue._id, videoId: video._id}
-    var path = FlowRouter.path("videoplayer", params)
+    if(issue && issue._id) {
+      console.log(issue)
+      console.log("READY!")
+      var video = issue.firstVideo();
+      var params = {issueId: issue._id, videoId: video._id}
+      var path = FlowRouter.path("videoplayer", params)
+      console.log(path)
+      return path;
+    } else {
+      return false;
+    }
 
-    console.log(path)
-    return path;
   }
 })
 
@@ -27,7 +31,7 @@ Template.home.events({
     console.log("First issue")
     var date = new Date();
     var issueId = Issues.insert({title: "første utgave", subtitle: "mye moro", published: false, createdAt: date})
-    var videoId = Videos.insert({title: "firste video", issueId: issueId, published: false, createdAt: date});
+    var videoId = Videos.insert({title: "første video", issueId: issueId, published: false, createdAt: date});
     var params = {issueId: issueId, videoId: videoId}
     var path = FlowRouter.path("blogPostRoute", params);
     FlowRouter.go("videoplayer", params)

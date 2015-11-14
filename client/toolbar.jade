@@ -1,37 +1,43 @@
 // TOLBAR
 template(name="toolbar")
   div(class="toolbar")
-    div
-      +progressBar
-    div
-      +uploader
-    div
-      span(id="time")
-      a(class="waves-effect waves-red btn issue-shot" href="#")
-        i(class="medium material-icons left") view_stream
-        |Utgavebilde
-      a(class="waves-effect waves-red btn splash-shot" href="#")
-        i(class="medium material-icons left") view_list
-        |Videobilde      
-      a(class="waves-effect waves-red btn snapshot" href="#")
-        i(class="medium material-icons left") view_module
-        |Kapitelbilde      
+    +progressBar
+    div(class="row")
+      div(class="col l6 m12")
+        +uploader
+        
+      div(class="col l6 m12")
+        +splashControlls
 
-  
+
 template(name="progressBar")
-  div(class="progress")
-    div(class="determinate" style="width: {{progress}}%")
+  //style="margin:0; padding:0"
+  div(class="progress" style="margin:0; padding:0")
+    div(class="determinate" style="width: {{progress}}%;")
     
 //Note: The id matches that in uploader.js    
 template(name="uploader")
   +unless showFileInput
-    form(action="#")
-      div(class="file-field input-field")
-        a(class="btn" href="#")
-          span File
-          input(id="slingshot_upload" type="file" name="datafile" size="40")
-        
+    a(class="filebutton btn waves-effect waves-red input-controll" href="#") File
+    input(id="slingshot_upload" type="file" class="upload" name="datafile" size="40" style='height: 0px;width: 0px; overflow:hidden;')
+    // style='height: 0px;width: 0px; overflow:hidden;'
+    a(class="filenameviewer btn disabled input-controll") ingen fil valgt
+      
   +if showUploadButton 
-    a(class="waves-effect waves-red btn upload" href="#") Start opplasting
+    a(class="waves-effect waves-red btn upload input-controll" href="#") Start opplasting
+      i(class="medium material-icons left") view_stream
   +if showCancelButton
-    a(class="waves-effect waves-red btn cancel" href="#") Avbryt opplasting
+    a(class="waves-effect waves-red btn cancel input-controll" href="#") Avbryt opplasting
+      i(class="medium material-icons left") view_stream
+      
+
+template(name="splashControlls")
+  a(class="waves-effect waves-red btn issue-shot input-controll" href="#")
+    i(class="medium material-icons left") view_stream
+    |Utgavebilde
+  a(class="waves-effect waves-red btn splash-shot input-controll" href="#")
+    i(class="medium material-icons left") view_list
+    |Videobilde      
+  a(class="waves-effect waves-red btn snapshot input-controll" href="#")
+    i(class="medium material-icons left") view_module
+    |Kapitelbilde    

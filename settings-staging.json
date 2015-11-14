@@ -1,8 +1,0 @@
-{
-  "awsBucket": "paretofilm-staging",
-  "awsAccessKeyId": "AKIAJVFQHJOUTQFS5NMA",
-  "awsSecretKey": "bBIHFhZI7j3jHCXjWzTJwhM6VY/nFT7m1jeNSD3i",
-  "public": {
-    "awsBucketUrl": "https://my-meteor-example.s3.amazonaws.com",
-  }
-}

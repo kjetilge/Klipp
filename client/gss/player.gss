@@ -1,27 +1,72 @@
 
 vHeight == 0;
-
-videoViewerWidth == ::window[width] * (80/100);
+videoViewerWidth == ::window[width] * (85/100);
 videoNavWidth == ::window[width] - videoViewerWidth;
+issueMaxHeight == ::window[height] / 2;
 
-#video {
-  width: 100%;
-  //width: == videoViewerWidth;
-  //height: == &intrinsic-height;
-  //vHeight == &height;
+#left-pane {
+  right: == videoViewerWidth;
+  left: == 0;
+  height: == ::window[height];
+
+}
+
+#right-pane {
+  right: == ::window[right];
+  height: == ::window[height];
+  width: == videoNavWidth;
+}
+
+
+#issue-nav {
+  max-height: == ::window[height] / 2;
+  //issueHeight == &height / 2;
+  button {
+    font-size: == videoNavWidth / 20;
+  }
+  #issue-nav-scroller {
+    overflow: scroll;
+    height: == issueMaxHeight - 60;
+  }
+}
+.issue-item {
+  margin-left: == videoNavWidth / 20;
+  margin-right: == videoNavWidth / 20;
+  .issue-item-actions {
+    span {
+      margin-left: == videoNavWidth / 20;
+      margin-right: == videoNavWidth / 20;
+    }
+  }
+}
+
+.video-nav-tall {
+  top: == videoNavWidth * (10/12) //::window[height] * (1/4);
+  height: == ::window[height] -  videoNavWidth * (10/12) //::window[height] * (3/4);
+  #video-scroll {
+    overflow: scroll;
+    height: == (::window[height] -  videoNavWidth * (10/12)) - 60;
+    //(::window[height] * (3/4) ) - 60;
+  }
+}
+
+.video-nav-short {
+  height: == ::window[height] / 2;
+  #video-scroll {
+    overflow: scroll;
+    height: == (::window[height] / 2) - 60;
+  }
+}
+video {
+  width: == videoViewerWidth;
+  height: == &intrinsic-height;
+  vHeight == &height;
   //background-color:green;
   //position:relative;
   //display: block;
 }
-
-#video-nav {
-  right: == ::window[right];
-  width: == videoNavWidth;
-  //top: == $top;
-  //bottom: == $bottom;
-}
-
 /*
+
 #chapter-nav {
   bottom: == $bottom;
   left: == $left;
@@ -31,4 +76,57 @@ videoNavWidth == ::window[width] - videoViewerWidth;
 
 #chapter-nav {
   height: 100%;
+}
+
+#video-nav-top {
+  h2 {
+    color: white;
+    font-size: == videoNavWidth / 10;
+    margin:0;
+    margin-left: == videoNavWidth / 20;
+    margin-top: == 20;
+  }
+}
+#video-nav {
+  #video-nav-top {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+        
+    justify-content: space-between;
+    div {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+  button {
+    width: == videoNavWidth / 10;
+    height: == videoNavWidth / 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    i {
+      font-size: == videoNavWidth / 15;
+      line-height: == videoNavWidth / 14;
+    }
+  }
+  ul.video-list {
+    margin: == videoNavWidth / 20;
+  }
+}
+.video-nav-item {
+  .video-nav-item-actions {
+    h2 {
+      font-size: == videoNavWidth / 14;
+      margin-top: == videoNavWidth / 30;
+    }
+    button {
+      margin-top: == videoNavWidth / 36;
+    }
+  }
+  p {
+    color: #4dd0e1;
+    font-size: == videoNavWidth / 28;
+    margin-top: == videoNavWidth / 15;
+  }
 }
