@@ -1,0 +1,40 @@
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+#homepage {
+  z-index: 100;
+}
+
+#mobile-nav {
+  background: rgba(0,0,0,0.6);
+  a {
+    color: white;
+  }
+
+}
+
+
+#cover {
+  background-image: url('assets/cover.jpg');
+  background-size: cover;
+  background-position: center top 20%;
+  background-repeat:no-repeat;
+}
+
+
+#front-header h1,h2,h3 {
+  margin:0;
+  padding:0;
+}
+
+.transp-nav {
+  background: rgba(0,0,0,0.5);
+  z-index: 2;
+}
+
+#front-overlay {
+  color: white;
+  //background-color: green;
+}

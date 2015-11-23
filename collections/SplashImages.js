@@ -55,7 +55,7 @@ if(Meteor.isServer){
         return SplashImages.find();
     });
 } else {
-    //Meteor.subscribe('splashImage');
+    Meteor.subscribe('splashImage');
     Meteor.subscribe('splashImages');
 }
 

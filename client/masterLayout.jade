@@ -1,34 +1,43 @@
 template(name="masterLayout")
   +Template.dynamic(template=nav)
   +Template.dynamic(template=main)
-  +Template.dynamic(template=footer)
+  //+Template.dynamic(template=footer)
   
 
 template(name="nav")
-  nav
-    div(class="nav-wrapper")
-      a(href="#!" class="brand-logo") Klipp
-      a(href="#" data-activates="mobile-nav" class="button-collapse")
-        i(class="material-icons") menu
-      ul(class="right hide-on-med-and-down")
-        li
-          a(href="{{pathFor 'home'}}") Home
-        li
-          a(href="{{pathFor 'videoplayer'}}") Video
-        li
-          +atNavButton
-      ul(class="side-nav" id="mobile-nav")
-        li
-          a(href="{{pathFor 'home'}}") Home
-        li
-          a(href="{{pathFor 'videoplayer'}}") Video
-        li
-          +atNavButton          
+  if Template.subscriptionsReady
+    div(id="front-header" class="grey darken-1")
+    div(id="cover" style="background-image: url('{{issueImage}}');")
+    nav(class="transp-nav" role="navigation" id="transp-nav")
+      div(class="nav-wrapper container")  
+        ul(class="hide-on-med-and-down right")
+          li
+            a(href="{{pathFor 'home'}}") Home
+              i(class="material-icons left") home
+          li
+            a(href="{{currentIssuePath}}") Video
+              i(class="material-icons left") video_library
+          li
+            +atNavButton
+        ul(class="side-nav" id="mobile-nav")
+          li
+            a(href="{{pathFor 'home'}}") Home
+          li
+            a(href="{{pathFor 'videoplayer'}}") Video
+          li
+            +atNavButton
+            
+        a(href="#!" class="brand-logo") Klipp Magasin
+        a(href="#" data-activates="mobile-nav" class="button-collapse")
+          i(class="material-icons") menu
+          
 
-                
+
+       
 template(name="footer")
   div(class="bottom-nav")
-    nav
+    nav(class="grey darken-3")
+      div(class="container")
         ul(id="nav-mobile" class="right")
           li(a href="{{pathFor 'home'}}") Home
             

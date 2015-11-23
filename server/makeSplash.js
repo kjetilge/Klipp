@@ -25,20 +25,25 @@ function makeSplash(vidUrl, time, splashWidth, splashHeight, done) {
   console.log("time", time)
   var size = splashWidth+"x"+splashHeight
   console.log("size", size)
-  var splashImagePath = new ffmpeg({ source: vidUrl})
-    .withSize(size)
-    .toFormat('png')
-    .takeScreenshots({
-        count: 1,
-        timemarks: [ time.toString() ]
-      }, thumbPath, function(err, filenames) {
-        if(err) {
-          console.log(err)
-          done(null, err);
-        } else {
-          var splashImagePath = thumbPath+filenames[0]
-          //console.log(splashImagePath);
-          done(null, splashImagePath);
-        }
-    });
+  try {
+    var splashImagePath = new ffmpeg({ source: vidUrl})
+      .withSize(size)
+      .toFormat('png')
+      .takeScreenshots({
+          count: 1,
+          timemarks: [ time.toString() ]
+        }, thumbPath, function(err, filenames) {
+          if(err) {
+            console.log("FEIL: ",err)
+            done(null, err);
+          } else {
+            var splashImagePath = thumbPath+filenames[0]
+            console.log(splashImagePath);
+            done(null, splashImagePath);
+          }
+      });
+  } catch(err) {
+    console.log("kunne ikke lage splash", err)
+  }
+
 }

@@ -28,6 +28,6 @@ Issues.helpers({
     return Videos.find({issueId: this._id})
   },
   firstVideo: function () {
-    return Videos.findOne({}, {limit: 1, $natural:-1})
+    return Videos.findOne({issueId: this._id}, {limit: 1, $natural:-1})
   }
 })

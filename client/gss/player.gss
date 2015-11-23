@@ -3,6 +3,18 @@ vHeight == 0;
 videoViewerWidth == ::window[width] * (85/100);
 videoNavWidth == ::window[width] - videoViewerWidth;
 issueMaxHeight == ::window[height] / 2;
+marginDark == (::window[width] - videoViewerWidth) / 20;
+navHeaderHight == 60;
+
+#player-home-link {
+  top-left: == 10;
+  z-index: 2;
+  color: #ab47bc;
+  i {
+    font-size: 50;
+  }
+  opacity: 0.7;
+}
 
 #left-pane {
   right: == videoViewerWidth;
@@ -20,7 +32,6 @@ issueMaxHeight == ::window[height] / 2;
 
 #issue-nav {
   max-height: == ::window[height] / 2;
-  //issueHeight == &height / 2;
   button {
     font-size: == videoNavWidth / 20;
   }
@@ -28,27 +39,39 @@ issueMaxHeight == ::window[height] / 2;
     overflow: scroll;
     height: == issueMaxHeight - 60;
   }
+  ul {
+    margin:0;
+    margin: == videoNavWidth / 20;
+  }
 }
+
 .issue-item {
-  margin-left: == videoNavWidth / 20;
-  margin-right: == videoNavWidth / 20;
+  height: == videoNavWidth * (2/3);
+  //margin: == videoNavWidth / 20;
   .issue-item-actions {
-    span {
-      margin-left: == videoNavWidth / 20;
-      margin-right: == videoNavWidth / 20;
+    h2 {
+      font-size: == videoNavWidth / 14;
+      margin-top: == videoNavWidth / 30;
     }
+    button {
+      margin-top: == videoNavWidth / 36;
+    }
+  }
+  p {
+    color: #4dd0e1;
+    font-size: == videoNavWidth / 28;
+    margin-top: == videoNavWidth / 15;
   }
 }
 
 .video-nav-tall {
-  top: == videoNavWidth * (10/12) //::window[height] * (1/4);
-  height: == ::window[height] -  videoNavWidth * (10/12) //::window[height] * (3/4);
+  /* marinDarke er issuenav->ul sin margin, 60 er navHeaderHight */
   #video-scroll {
     overflow: scroll;
-    height: == (::window[height] -  videoNavWidth * (10/12)) - 60;
-    //(::window[height] * (3/4) ) - 60;
+    height: == ::window[height] - videoNavWidth * (2/3) - (marginDark * 2) - (60 * 2);
   }
 }
+
 
 .video-nav-short {
   height: == ::window[height] / 2;
@@ -57,6 +80,8 @@ issueMaxHeight == ::window[height] / 2;
     height: == (::window[height] / 2) - 60;
   }
 }
+
+
 video {
   width: == videoViewerWidth;
   height: == &intrinsic-height;
@@ -65,8 +90,8 @@ video {
   //position:relative;
   //display: block;
 }
-/*
 
+/*
 #chapter-nav {
   bottom: == $bottom;
   left: == $left;
@@ -80,42 +105,20 @@ video {
 
 #video-nav-top {
   h2 {
-    color: white;
     font-size: == videoNavWidth / 10;
-    margin:0;
-    margin-left: == videoNavWidth / 20;
-    margin-top: == 20;
+    padding-bottom: == videoNavWidth / 20;
   }
 }
-#video-nav {
-  #video-nav-top {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-        
-    justify-content: space-between;
-    div {
-      display: flex;
-      justify-content: space-between;
-    }
-  }
-  button {
-    width: == videoNavWidth / 10;
-    height: == videoNavWidth / 10;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    i {
-      font-size: == videoNavWidth / 15;
-      line-height: == videoNavWidth / 14;
-    }
-  }
-  ul.video-list {
-    margin: == videoNavWidth / 20;
-  }
+
+ul.video-list {
+  margin: == videoNavWidth / 20;
 }
 .video-nav-item {
   .video-nav-item-actions {
+    .editable-text {
+      font-size: == videoNavWidth / 14;
+      margin-top: == videoNavWidth / 30;
+    }
     h2 {
       font-size: == videoNavWidth / 14;
       margin-top: == videoNavWidth / 30;

@@ -60,7 +60,6 @@ Template.html5Player.created = function () {
   self.autorun(function() {
     var videoId = FlowRouter.getParam('videoId');
     self.subscribe('singleVideo', videoId);
-
     FlowRouter.subsReady("singleVideo", videoId, function() { //single video is available when signle video is available
       var vid = Videos.findOne({_id: videoId});
       self.subscribe('singleSplash', vid.splashId);
@@ -79,16 +78,30 @@ Template.html5Player.onRendered(function () {
 })
 
 
-
-
 /******************* ISSUES *********************/
+
+Template.issueNav.created = function () {
+  var self = this;
+  self.autorun(function() {
+    var videoId = FlowRouter.getParam('videoId');
+    self.subscribe('issues');
+    FlowRouter.subsReady("issues", videoId, function() {
+      self.subscribe('videos');
+    })
+  })
+}
 
 Template.issueNav.helpers({
 	issueItems: function () {
-    if(Session.get("showOnlyCurrentIssue"))
+    if(Session.get("showOnlyCurrentIssue")) {
+      console.log("showOnlyCurrentIssue")
       return Issues.find({}, {sort: {createdAt: -1}, limit: 1});
-    else
+    }
+    else {
+      console.log("show All Issues")
       return Issues.find({}, {sort: {createdAt: -1}});
+    }
+
 	},
   showOnlyCurrentIssue: function () {
     return Session.get("showOnlyCurrentIssue");
@@ -202,16 +215,20 @@ Template.issueItem.helpers({
       console.log("frontSplash",splashUrl)
       return splashUrl;
     } else {
-      return "/images/no-video.jpg";
+      var jqueryString = ".issue-select#"+issueId+" img";
+      var img = $(jqueryString)[0];
+      if(img && img.src)
+        return img.src;
+      else
+        return "/images/no-video.jpg";
     }
   },
+  firstVideoId: function () {
+    if(this.firstVideo()) {
+      return this.firstVideo()._id;
+    }
+  }
 })
-
-Template.issueNav.onCreated(function () {
-  console.log("Issues")
-  Meteor.subscribe("issues");
-})
-
 
 
 
@@ -224,9 +241,8 @@ Template.videoNav.helpers({
     console.log("issueId", issueId)
     return Videos.find({issueId: issueId});
   },
-  videoNavHeight: function () {
-    var onlyCurrentIssue = Session.get("showOnlyCurrentIssue"); //init true
-    return (onlyCurrentIssue) ? "video-nav-tall" : "video-nav-short";
+  showOnlyCurrentIssue: function () {
+    return Session.get("showOnlyCurrentIssue"); //init true
   }
 })
 Template.videoNav.created = function () {
@@ -250,9 +266,9 @@ Template.videoNav.events({ /********** CREATE VIDEO ***********/
 Template.videoNavItem.events({
   'click .video-select': function () {
     console.log("uploadFile set to null - is this smart ?")
-    //Session.set("uploadFile", null);
+    Session.set("uploadFile", null);
   },
-  'click a.remove-video': function () {
+  'click button.remove-video': function () {
     Session.set("uploadFile", null);
     var issueId = FlowRouter.getParam("issueId");
     var count = Videos.find({issueId: issueId}).count();

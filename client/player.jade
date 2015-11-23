@@ -5,9 +5,9 @@ template(name="player")
       +Template.dynamic(template=videoArea)
       if isAdmin
         +Template.dynamic(template=toolbarArea)
-      //+Template.dynamic(template=chaptersArea)
+        +Template.dynamic(template=chaptersArea)
 
-    div(id="right-pane" class="grey lighten-1")
+    div(id="right-pane" class="grey lighten-4")
       +Template.dynamic(template=issueNavArea)
       +Template.dynamic(template=videoNavArea)
 
@@ -17,43 +17,71 @@ template(name="player")
 
 // HTML5 PLAYER
 template(name="html5Player")
+  a(href="/" id="player-home-link")
+    i(class="material-icons" ) home
   div(id="html5Player")
     if Template.subscriptionsReady
       video(id="video" type="video/mp4" src="{{videoUrl}}" poster="{{posterImageUrl}}" controls crossOrigin="Anonymous" style="display:block")
     else Template.subscriptionsReady
       h1 loading ..
+
     
+
 // Issue (Utgave)
 template(name="issueNav")
-  div(id="issue-nav")
-    div(id="issue-nav-top" class="grey darken-3")
+  if Template.subscriptionsReady
+    div(id="issue-nav" class="grey darken-4")
+      div(id="issue-nav-top" class="gray darken-3")
+        button(class="toggle-issue-browser waves-effect waves-light btn")
+          if showOnlyCurrentIssue
+            | Tidligere utgaver
+          else
+            | Kun siste utgave
+        if isAdmin
+          button(class="btn-floating btn-small waves-effect waves-light add-issue")
+            i(class="material-icons") add
+            
       if showOnlyCurrentIssue
-        button(class="toggle-issue-browser waves-effect waves-light btn") Tidligere utgaver
-      else
-        button(class="toggle-issue-browser waves-effect waves-light btn") Kun siste utgave
-      if isAdmin
-        button(class="btn-floating btn-small waves-effect waves-light add-issue")
-          i(class="material-icons") add
-    
-    if showOnlyCurrentIssue
-      h1 Issue
-    else
-      div(id="issue-nav-scroller" class="grey darken-4")   
         ul
           +each issueItems
             li
               +issueItem
+      else
+        div(id="issue-nav-scroller")   
+          ul
+            +each issueItems
+              li
+                +issueItem
+  else
+    div(id="issue-nav" class="grey darken-4")
+      div(id="issue-nav-top" class="gray darken-3")
+        h1(style="color: white") loading
 
 template(name="issueItem")
-  div(class="issue-item card grey darken-4")
-    a(href="{{pathFor '/utgave/:issue/kurs/:video' issue=_id video=firstVideo._id}}")
-      div(class="issue-select card-image")
+  //
+    div(class="issue-item grey darken-4")
+      | Issue
+
+  div(class="issue-item")
+    a(href="{{pathFor '/utgave/:issue/kurs/:video' issue=this._id video=firstVideoId}}")
+      div(class="issue-select card-image" id="{{_id}}")
         img(src="{{frontSplashSmall}}" class="frontSplashSmall")
-        span(class="card-title") {{title}}
+    div(class="issue-item-actions")
+      if isAdmin
+        h2 {{> editableText collection="issues" field="title"}}
+      else
+        h2 {{title}}
+      if isAdmin
+        input(type="checkbox" id="{{_id}}" checked="{{published}}")
+        label(for="{{_id}}") Publisert
+        a(class="btn-floating btn-small waves-effect waves-light red remove-issue")
+          i(class="material-icons") delete    
+        
+  //      
     if isAdmin
       div(class="issue-item-actions")
         div(class='edit-title center-align') {{> editableText collection="issues" field="title"}}
-        span       
+        span   
           input(type="checkbox" id="{{_id}}" checked="{{published}}")
           label(for="{{_id}}") Publisert
           a(class="btn-floating btn-small waves-effect waves-light red remove-issue")
@@ -62,20 +90,32 @@ template(name="issueItem")
 
 // VIDEO NAV
 template(name="videoNav")
-  //Heigth determined by .video-nav-tall / .video-nav-short from {{videoNavHeight}}
-  div(id="video-nav" class="{{videoNavHeight}} grey darken-4")
-    //Button to add videos
-    div(id="video-nav-top" class="grey darken-3")
-      h2(class="video-nav-heading") Videoer
-      if isAdmin
-        button(class="btn-floating btn-small waves-effect waves-light green add-video")
-          i(class="material-icons") add
-    //List of videos
-    div(id="video-scroll")
-      ul(class="video-list")
-        +each videos
-          li
-            +videoNavItem
+  
+  //*********************** THIS CHRASHES! **************************
+  //Vurder å skjule/vise aktiv nav ved å offsette med 10000px *
+
+  if showOnlyCurrentIssue
+    div(id="video-nav" class="video-nav-tall grey darken-4")
+      div(id="video-nav-top" class="grey darken-3")
+        h2(class="video-nav-heading") Videoer
+        button(class="btn-floating btn-small waves-effect waves-light green add-video") +
+      //List of videos
+      div(id="video-scroll")
+        ul(class="video-list")
+          +each videos
+            li
+              +videoNavItem
+  else
+    div(id="video-nav" class="video-nav-short grey darken-4")
+      div(id="video-nav-top" class="grey darken-3")
+        h2(class="video-nav-heading") Videoer
+        button(class="btn-floating btn-small waves-effect waves-light green add-video") +
+      //List of videos
+      div(id="video-scroll")
+        ul(class="video-list")
+          +each videos
+            li
+              +videoNavItem
 
 template(name="videoNavItem")
   div(class="video-nav-item")
@@ -92,7 +132,7 @@ template(name="videoNavItem")
         else
           h2 {{title}}
       if isAdmin
-        button(class="btn-floating btn-small waves-effect waves-light  green remove-video")
+        button(class="btn-floating btn-small waves-effect waves-light  red remove-video")
           i(class="material-icons") delete
     p Fil: {{fileName}}      
 
@@ -106,22 +146,26 @@ template(name="chapters")
       +chapter
 
 template(name="chapter")
-  span(class="chapter" style="display: inline-block")
+  
     if isAdmin
-      div
-        button(class="delete") X
-    +if url store="chapterImage"
-      img(src="{{url store='chapterImage'}}")
-    +else
-      img(src="/uploading.png")
-      unless isUploaded
-        p(class="uploadProgress") uploading..{{uploadProgress}}%
-      else
-        p(class="uploadProgress") processing..
-    div
-      span(class='title') {{> editableText collection="cfs.chapters.filerecord" field="title"}}
-      button(class="adjust-time") Time
-      button(class="adjust-image") Img
+      span(class="chapter" style="display: inline-block")
+        div
+          button(class="delete") X
+        +if url store="chapterImage"
+          img(src="{{url store='chapterImage'}}")
+        +else
+          img(src="/uploading.png")
+          unless isUploaded
+            p(class="uploadProgress") uploading..{{uploadProgress}}%
+          else
+            p(class="uploadProgress") processing..
+        div
+          span(class='title') {{> editableText collection="cfs.chapters.filerecord" field="title"}}
+          button(class="adjust-time") Time
+          button(class="adjust-image") Img
+    else
+      span(class="chapter" style="display: inline-block")
+        div(class="chapter")
 
 
 

@@ -1,4 +1,4 @@
-Template.home.helpers({
+Template.nav.helpers({
   currentIssue: function () {
     var issue = Issues.findOne({}, {sort: {createdAt: -1, limit: 1}} );
     return issue;
@@ -27,20 +27,7 @@ Template.home.helpers({
   }
 })
 
-Template.home.events({
-  'click a.first-issue': function (e, t) {
-    e.preventDefault();
-    console.log("First issue")
-    var date = new Date();
-    var issueId = Issues.insert({title: "første utgave", subtitle: "mye moro", published: false, createdAt: date})
-    var videoId = Videos.insert({title: "første video", issueId: issueId, published: false, createdAt: date});
-    var params = {issueId: issueId, videoId: videoId}
-    var path = FlowRouter.path("blogPostRoute", params);
-    FlowRouter.go("videoplayer", params)
-  }
-})
-
-Template.home.onCreated(function(){
+Template.nav.onCreated(function(){
   this.subscribe('currentIssue');
-  this.subscribe("singleVideo");
+  this.subscribe("videos");
 })

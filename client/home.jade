@@ -1,19 +1,11 @@
 template(name="home")
-  h2 Home
-  input(type="checkbox" id="test5")
-  label(for="test5") Red
-  //
-  p ready ?
-  if Template.subscriptionsReady
-    p ready
-    if currentIssue
-      img(src="")
-      div(class="front-logo")
-        | logo her
-      h1 {{title}}
-      h4 {{subtitle}}
-      a(href="{{currentIssuePath}}") Nyeste utgave
-    else
-      p Det finnes ingen utgivelser.
-      button(class="first-issue waves-effect waves-light btn") Lag første utgave
-      a(href="{{currentIssuePath}}") Nyeste utgave
+  div(id="homepage" class="grey darken-3")
+    if Template.subscriptionsReady
+      if currentIssue
+        a(href="{{currentIssuePath}}") Nyeste utgave
+      else
+        p Det finnes ingen utgivelser. Hvis du er administrator. logg inn for å lage en utgivelse.
+        if isAdmin
+          h1 Admin
+          a(href="#" class="first-issue waves-effect waves-light btn") Lag første utgave
+          //a(href="{{currentIssuePath}}") Nyeste utgave

@@ -19,8 +19,26 @@ if (Meteor.isServer) {
 	  },
 
 	  key: function (file, vidObject) {
+      console.log("FILE:", file)
+      var engString = removeNorwegian(file.name);
+      console.log("engString", engString);
+      file.name = engString.replace(/[^a-z0-9]/gi, '_').toLowerCase();
       Videos.update(vidObject.videoId, {$set: {fileName: file.name}})
       return vidObject.videoId+"/"+file.name;
 	  }
 	});
+}
+
+var removeNorwegian = function (str) {
+     var ret = str;
+     ret = ret.replace( /ø/g, 'oe' );
+     ret = ret.replace( /Ø/g, 'OE' );
+     ret = ret.replace( /å/g, 'aa' );
+     ret = ret.replace( /Å/g, 'AA' );
+     ret = ret.replace( /æ/g, 'ae' );
+     ret = ret.replace( /Æ/g, 'AE' );
+     ret = ret.replace( /\_/g, '-' );
+
+     ret = ret.replace(/[^a-zA-Z0-9\/-]/ig,'-').replace(/_+/ig,'-').replace(/[-]{2,}/g, '-').toLowerCase();
+     return ret;
 }

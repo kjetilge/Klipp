@@ -1,0 +1,25 @@
+[outer-radius] == 20;
+aspect == ::window[width] / ::window[height];
+
+#homepage {
+  height: == ::window[height] * (1/2);
+  width: == ::window[width];
+  bottom: == ::window[height];
+  left: == 0;
+}
+
+#cover {
+  background-size: cover;
+}
+
+#front-header {
+  width: == ::window[width] ;
+  height: == ::window[height] * (1/2);
+  center-x: == ::window[center-x];
+  /*border-radius: == [outer-radius];*/
+  z-index: 0;
+}
+
+
+@v |-0-(#cover)-0-| in(#front-header);
+@h |-0-(#cover)-0-| in(#front-header);

@@ -153,7 +153,7 @@ Template.uploader.events({
     SplashHeight =  truncate((SplashWidth / aspect), 0);
     /* END DIMENSIONS */
 
-    var videoId = FlowRouter.getParam('videoId');
+    var videoId = FlowRouter.getParam('videoId'); //from empty video (generated on "new video")
     VID = videoId;
     upload = new Slingshot.Upload("videoUploads", {videoId: videoId}); //videoId ADD meta-context
     file = template.find("#slingshot_upload").files[0];
@@ -166,30 +166,41 @@ Template.uploader.events({
           alert (error);
         } else {
             //Session.set("uploadFile", null);
+            Videos.update(VID, {$set: {downloadUrl: downloadUrl}})
             var splashTime = Session.get("splashTime");
             var time = AutoSplashTime;
             if(splashTime) {
               time = splashTime;
               Session.set("splashTime", null);
             } //vidUrl, time, splashWidth, splashHeight
+
             //************************** Video SPLASH ****************************
             splashId = Meteor.call('makeSplash', downloadUrl, time, SplashWidth, SplashHeight, (err, res) => {
-              Videos.update(VID, {$set: {downloadUrl: downloadUrl, splashId: res._id}})
-              Session.set('videoLoaded', false);
-              Session.set("uploadFile", null); //er dette lurt ?
+              if(!err) {
+                console.log('makeSplash res', res)
+                Videos.update(VID, {$set: {splashId: res._id}})
+                Session.set('videoLoaded', false);
+                Session.set("uploadFile", null); //er dette lurt ?
+              } else {
+                console.log("kunne ikke lage splash:", err)
+              }
             });
 
 
             //************************** ISSUE SPLASH ****************************
             //Capture issueSplash if preview exists
-            let video = Videos.findOne(VID)
-            let issue = Issues.findOne(video.issueId);
-            if(video.issueSplashTime) {
+            var video = Videos.findOne(VID);
+            var issue = Issues.findOne(video.issueId);
+            console.log("video", video);
+            console.log("issue", issue);
+
+            if(video && video.issueSplashTime) {
               Meteor.call('makeSplash', downloadUrl, video.issueSplashTime, SplashWidth, SplashHeight, (err, res) => {
                 Issues.update(issue._id, {$set: {splashId: res._id}})
                 Session.set("uploadFile", null); //er dette lurt ?
               });
             }
+
 
         }
       });
@@ -249,9 +260,8 @@ function previewSplash(videoId) {
   canvas.getContext('2d')
         .drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  //var img = document.createElement("img");
-  var img = $(".video-select#"+videoId+" img")[0];
-  console.log(img);
+  var jqueryString = ".video-select#"+videoId+" img";
+  var img = $(jqueryString)[0];
   img.src = canvas.toDataURL();
 }
 
@@ -265,7 +275,10 @@ function previewIssueSplash(issueId) {
         .drawImage(video, 0, 0, canvas.width, canvas.height);
 
   //var img = document.createElement("img");
-  var img = $(".issue-select#"+issueId+" img")[0];
+  console.log("issueId", issueId);
+  var jqueryString = ".issue-select#"+issueId+" img";
+  console.log("jqueryString", jqueryString);
+  var img = $(jqueryString)[0];
   console.log(img);
   img.src = canvas.toDataURL();
 }
