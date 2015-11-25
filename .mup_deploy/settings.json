@@ -1,0 +1,15 @@
+{
+  "AWSBucket": "paretofilm-uploads",
+  "AWSRegion": "eu-west-1",
+  "AWSAccessKeyId": "AKIAJVFQHJOUTQFS5NMA",
+  "AWSSecretAccessKey": "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",
+  "AWS": {
+    "accessKeyId": "AKIAJVFQHJOUTQFS5NMA",
+    "secretAccessKey": "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"
+  },
+  "public": {
+    "awsBucketUrl": "https://paretofilm-uploads.s3.amazonaws.com",
+    "environment": "staging"
+  },
+  "googleApiKey": "AABBCCddEEff12123131"
+}
